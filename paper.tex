@@ -1,0 +1,1013 @@
+\documentclass[11pt]{amsart}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amssymb,amsthm,booktabs}
+% Text font: Latin Modern without the ff/fi/fl ligatures, so that text
+% extracted from the PDF is searchable. Compile with Tectonic or XeLaTeX.
+\usepackage[no-math]{fontspec}
+\setmainfont{lmroman10}[Extension=.otf, UprightFont=*-regular,
+  BoldFont=*-bold, ItalicFont=*-italic, BoldItalicFont=*-bolditalic,
+  SmallCapsFont=lmromancaps10-regular, SmallCapsFeatures={Ligatures=TeX},
+  Ligatures={TeX,NoCommon}]
+\usepackage{xurl}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem*{conjecture*}{Conjecture}
+\newtheorem*{ift}{Analytic implicit function theorem}
+\newtheorem*{pringsheim}{Pringsheim's theorem}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem*{definition*}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem*{remark*}{Remark}
+
+\numberwithin{equation}{section}
+\setlength{\emergencystretch}{2em}
+\exhyphenpenalty=10000 % no line breaks after explicit hyphens (keeps dates and hashes whole)
+
+\DeclareMathOperator{\Exp}{Exp}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\re}{Re}
+
+\newcommand{\Mbar}{\overline{M}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\DD}{\mathbb{D}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\mean}{\mathfrak{m}}
+\newcommand{\var}{\mathfrak{v}}
+\newcommand{\pp}{\mathfrak{p}}
+\newcommand{\fP}{\mathfrak{P}}
+\newcommand{\psibar}{\overline{\psi}}
+\newcommand{\cA}{\mathcal{A}}
+\newcommand{\cK}{\mathcal{K}}
+\newcommand{\cN}{\mathcal{N}}
+\newcommand{\cP}{\mathcal{P}}
+\newcommand{\cQ}{\mathcal{Q}}
+\newcommand{\abs}[1]{\lvert #1\rvert}
+\newcommand{\dd}{\mathrm{d}}
+
+% ---------------------------------------------------------------------
+% Zenodo DOI. Leave empty until the DOI is assigned; then insert it here,
+% for example \newcommand*{\zenodoDOI}{10.5281/zenodo.1234567}.
+% When the macro is empty, nothing is printed.
+\newcommand*{\zenodoDOI}{10.5281/zenodo.24600317}
+% ---------------------------------------------------------------------
+\newcommand*{\doiline}{\ifx\zenodoDOI\empty\else. DOI: \href{https://doi.org/\zenodoDOI}{\nolinkurl{\zenodoDOI}}\fi}
+
+\title[Asymptotic normality of Betti numbers of moduli quotients]{Asymptotic normality of the Betti numbers of \(\Mbar_{0,n}/S_n\), \(\Mbar_{0,n+1}/S_n\) and \(\PP^1[n]/S_n\): a proof of Choi--Kiem Conjecture~5.2}
+\author{Sukhraj Sachdeva}
+\date{2026-11-27\doiline}
+
+\begin{document}
+
+\begin{abstract}
+Choi and Kiem conjectured that the Betti numbers of the quotients \(\Mbar_{0,n}/S_n\), \(\Mbar_{0,n+1}/S_n\) and \(\PP^1[n]/S_n\) by the symmetric group are asymptotically normally distributed, and that the three variances grow linearly at the same rate. We prove this conjecture, conditional on three inputs cited from the literature: generating-function identities of Choi, Kiem and Lee (a preprint), identity (5.10) of Choi and Kiem, and Hwang's quasi-powers theorem. The means are exactly half the dimensions. The variances are \(\sigma^2 n+c_X+O(1/n)\), with one constant \(\sigma^2>0\) common to the three families. The Kolmogorov distance to the normal law is \(O(n^{-1/2})\). The proof applies singularity analysis to the weighted-tree recursion of Choi, Kiem and Lee. Its only computational step is the inequality \(\sigma^2>0\). This inequality is certified by two independent interval-arithmetic programs whose enclosures agree; their intersection is an interval of width less than \(10^{-31}\) around \(0.150975912759\). The argument has been checked by AI referees. It has not been formalized in a proof assistant.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}\label{sec:intro}
+
+\subsection{The spaces}
+
+For \(n\ge 3\), let \(\Mbar_{0,n}\) be the moduli space of stable curves of genus \(0\) with \(n\) marked points. It is a smooth projective variety of complex dimension \(n-3\). It contains, as a dense open subset, the space of \(n\) distinct labelled points on the projective line \(\PP^1\), taken up to M\"obius transformations.
+
+For \(n\ge 1\), let \(\PP^1[n]\) be the Fulton--MacPherson compactification of the space of \(n\) distinct labelled points on \(\PP^1\). It is a smooth projective variety of dimension \(n\).
+
+The symmetric group \(S_n\) acts on \(\Mbar_{0,n}\) and on \(\PP^1[n]\) by permuting the labels. It acts on \(\Mbar_{0,n+1}\) by permuting the first \(n\) labels and fixing the last one.
+
+Following Choi and Kiem \cite[\S5.1]{CK}, the \emph{Betti numbers of the quotient} \(X/S_n\) are the dimensions \(\dim H^{2k}(X;\QQ)^{S_n}\) of the subspaces of \(S_n\)-invariant classes. Equivalently, they are the multiplicities of the trivial representation of \(S_n\) in \(H^{2k}(X;\QQ)\). The three spaces have no odd cohomology, so only even degrees occur.
+
+\subsection{Betti numbers as a distribution}
+
+Let \(X\) be a space whose cohomology lives in even degrees. Its \emph{Poincar\'e polynomial} in the variable \(u=t^2\) is
+\[
+P_X(u)=\sum_{k\ge0}\dim H^{2k}(X;\QQ)\,u^k .
+\]
+The normalized polynomial \(f=P_X/P_X(1)\) has non-negative coefficients summing to \(1\). So it is the \emph{probability generating function} of a random variable \(\xi\) with values in \(\ZZ_{\ge0}\): we have \(\Pr(\xi=k)=\dim H^{2k}(X;\QQ)/P_X(1)\) and \(f(u)=\E(u^{\xi})\). The mean and the variance of \(\xi\) are
+\begin{equation}\label{eq:meanvar}
+\mean(f)=f'(1),\qquad \var(f)=f''(1)+f'(1)-f'(1)^2 .
+\end{equation}
+
+\begin{definition*}[{\cite[\S2, the text after Def.~2.1]{CK}}]
+Let \((X_n)\) be a sequence of spaces, \(f_n\) the normalized Poincar\'e polynomial of \(X_n\), and \(\xi_n\) the corresponding random variable. The Betti numbers of \(X_n\) are \emph{asymptotically normally distributed} if \((\xi_n-\mean(f_n))/\sqrt{\var(f_n)}\) converges in distribution to the standard normal law \(N(0,1)\).
+\end{definition*}
+
+We measure the speed of convergence by the \emph{Kolmogorov distance}. For a real random variable \(Y\) it is
+\[
+d_K(Y)=\sup_{x\in\RR}\Bigl\lvert \Pr(Y\le x)-\frac{1}{\sqrt{2\pi}}\int_{-\infty}^{x}e^{-t^2/2}\,\dd t\Bigr\rvert .
+\]
+If \(d_K(Y_n)\to0\), then \(Y_n\) converges in distribution to \(N(0,1)\).
+
+\subsection{The conjecture}
+
+The following is quoted verbatim from \cite[\S5.1]{CK}; the paper is licensed CC~BY~4.0.
+
+\begin{conjecture*}[Choi--Kiem {\cite[Conj.~5.2]{CK}}]
+The Betti numbers of \(\Mbar_{0,n}/S_n\), \(\Mbar_{0,n+1}/S_n\) and \(\PP^1[n]/S_n\) are asymptotically normally distributed and the variances associated with these three spaces grow linearly at the same rate.
+\end{conjecture*}
+
+The same authors restate the first case as open in \cite[Conj.~3.9(2)]{CK2}.
+
+\subsection{Main result}
+
+\begin{theorem}\label{thm:main}
+Let \((X_n)\) be one of the three families
+\[
+\Mbar_{0,n}/S_n\ (n\ge3),\qquad \Mbar_{0,n+1}/S_n\ (n\ge2),\qquad \PP^1[n]/S_n\ (n\ge1).
+\]
+Let \(f_n\) be the normalized Poincar\'e polynomial of \(X_n\), and let \(\xi_n\) be the random variable with probability generating function \(f_n\). Let \(d_n\) be the complex dimension of the space being divided by \(S_n\), that is \(d_n=n-3\), \(n-2\) or \(n\). There are a real number \(\sigma^2>0\), the same for the three families, and a real number \(c_X\) that depends on the family, such that the following hold.
+\begin{enumerate}
+\item \(\mean(f_n)=d_n/2\). In particular \(\mean(f_n)=n/2+O(1)\).
+\item \(\var(f_n)=\sigma^2 n+c_X+O(1/n)\).
+\item \(d_K\bigl((\xi_n-\mean(f_n))/\sqrt{\var(f_n)}\bigr)=O(n^{-1/2})\), for the \(n\) with \(\var(f_n)>0\) (by (2), every sufficiently large \(n\)).
+\end{enumerate}
+In particular, the conjecture of Choi and Kiem holds.
+\end{theorem}
+
+The constant \(\sigma^2\) is explicit. Let \(\rho(u)\) be the dominant singularity, as a function of \(u\) near \(1\), of the tree series of Section~\ref{sec:gf}; it is constructed in Corollary~\ref{cor:tree}. Put \(B(u)=\rho(1)/\rho(u)\). Then \(\sigma^2=B''(1)+B'(1)-B'(1)^2\), and \eqref{eq:musigma} expresses it through derivatives of one explicit analytic function.
+
+\begin{remark*}[the value of \(\sigma^2\)]
+The certified computation of Section~\ref{sec:computer} gives the outward enclosure
+\[
+\sigma^2\in[0.1509759127590951970019541828119798,\ 0.1509759127590951970019541828120123].
+\]
+The proof of Theorem~\ref{thm:main} uses only the inequality \(\sigma^2>0\). Choi and Kiem remark after their conjecture that determining the limiting value of the growth rate would be interesting \cite[\S5.1]{CK}. The enclosure above is a rigorous numerical answer; we have no closed form for \(\sigma^2\).
+\end{remark*}
+
+\subsection{What was known}
+
+Choi and Kiem proved that the Betti numbers of \(\Mbar_{0,n}\) and \(\PP^1[n]\) themselves (without the quotient) are asymptotically normal, with variance rate \((3-e)/(6(e-2))\) \cite[Thm.~3.1 and \S4]{CK}. Their proof uses an explicit formula for the inverse of a generating function. In the quotient case the generating function satisfies an equation that involves the series at all the arguments \((x^k,u^k)\), \(k\ge2\). So no explicit inverse is available.
+
+Choi and Kiem also give a conditional argument for the ``same rate'' part of the conjecture \cite[Appendix]{CK}. It assumes that one generating function has a square-root singularity, which they call an unproven expectation, and further that its leading coefficient is non-zero.
+
+Choi, Kiem and Lee proved that the Betti sequence of \(\Mbar_{0,n}/S_n\) is asymptotically log-concave but not ultra-log-concave \cite[Cor.~6.10--6.11]{CKL}. The Poincar\'e polynomial of \(\Mbar_{0,n}/S_n\) is not real-rooted \cite[\S4]{BK}. So Harper's method \cite{Ha}, which derives normality from real zeros, does not apply. The authors' later work on genus \(g\ge1\) \cite{CK3} does not treat the quotients.
+
+\subsection{Method}
+
+The proof is an application of standard tools of analytic combinatorics to a recursion of Choi, Kiem and Lee. It runs as follows.
+\begin{enumerate}
+\item The three Poincar\'e polynomials are coefficients of three power series. All three are built from one series \(T(x,u)\), defined by a recursion over weighted trees (Theorem~\ref{thm:CKL}, cited from \cite{CKL,CK}).
+\item The recursion is rewritten as \(y=F(x,y,u)\) with \(F\) analytic. At \(u=1\) the coefficients of \(F\) are non-negative (Section~\ref{sec:tree}). The terms \(T(x^k,u^k)\) with \(k\ge2\) converge on a larger disc, so they act as harmless analytic coefficients.
+\item At \(u=1\) the radius of convergence \(\rho\) of \(T(x,1)\) is the unique zero of an explicit decreasing function \(h\), and \(T\) has a square-root singularity there (Section~\ref{sec:char}).
+\item For complex \(u\) near \(1\) the singularity moves analytically to a point \(\rho(u)\). The square-root form persists uniformly in \(u\), and \(T\) continues analytically to a fixed slit disc (Sections~\ref{sec:inversion} and~\ref{sec:uniform}). This needs a variant of a theorem of Drmota \cite[Thm.~2.21]{Dr}, because one of its hypotheses fails here.
+\item The three series inherit the singularity at \(\rho(u)\), with exponents \(\frac12\), \(\frac12\) and \(\frac32\) and non-vanishing leading coefficients (Section~\ref{sec:families}).
+\item A uniform transfer argument gives \(P_n(u)/P_n(1)=A(u)B(u)^n(1+O(1/n))\) with \(B(u)=\rho(1)/\rho(u)\), the same for the three families (Section~\ref{sec:asym}).
+\item Hwang's quasi-powers theorem then gives the central limit theorem, provided \(\sigma^2=B''(1)+B'(1)-B'(1)^2\) is not zero (Section~\ref{sec:proof}). The inequality \(\sigma^2>0\) is the one computational step. Poincar\'e duality gives the means.
+\end{enumerate}
+
+\subsection{How each step is justified}
+
+We separate three kinds of justification.
+\begin{itemize}
+\item \emph{Cited from the literature.} Theorem~\ref{thm:CKL} (generating functions, from \cite{CKL} and \cite{CK}) and Theorem~\ref{thm:hwang} (the quasi-powers theorem \cite{Hw}). We also use standard facts of complex analysis: the analytic implicit function theorem, Pringsheim's theorem, Cauchy's estimates and the identity theorem.
+\item \emph{Computer-verified.} Only the inequality \(\sigma^2>0\) in \eqref{eq:pos}. Section~\ref{sec:computer} describes the two independent implementations. They use only results proved by hand earlier in the paper: Sections~\ref{sec:tree} and~\ref{sec:char}, the characteristic system \eqref{eq:charsys}, the formulas of Lemma~\ref{lem:formulas}, and the computation in the proof of Lemma~\ref{lem:q0}. They do not use Theorem~\ref{thm:main} or any consequence of it.
+\item \emph{Proved by hand.} Everything else, in Sections~\ref{sec:tree}--\ref{sec:proof}.
+\end{itemize}
+Nothing is formalized in Lean (Section~\ref{sec:lean}).
+
+\subsection{Credits}
+
+% Credit lines from the final gate of 2026-11-27, with the
+% "Expert verification required" wording in place of any sentence about
+% human review.
+\begin{itemize}
+\item \emph{Conjecture, conventions and data.} J.~Choi and Y.-H.~Kiem, \emph{Asymptotic distribution of the Betti numbers of \(\overline{\mathcal M}_{0,n}\)}, \href{https://arxiv.org/abs/2601.08369}{arXiv:2601.08369} (v1 2026-01-13, v2 2026-05-02), Conjecture~5.2; Proc. Natl. Acad. Sci. USA 123 (18) (2026) e2601111123, \href{https://doi.org/10.1073/pnas.2601111123}{doi:10.1073/pnas.2601111123} \cite{CK}.
+  \begin{itemize}
+  \item The same paper proves the non-quotient case (\(\Mbar_{0,n}\) and \(\PP^1[n]\)).
+  \item It gives identity (5.10) and a conditional argument for the ``same rate'' clause.
+  \item It computes the quotient Betti numbers up to \(n=72\) (\S5.1) and tabulates the normalized variances in Table~1.
+  \item Choi and Kiem restated the \(\Mbar_{0,n}/S_n\) case as open in \href{https://arxiv.org/abs/2608.24052}{arXiv:2608.24052} (2026-08-25), Conjecture~3.9(2) \cite{CK2}.
+  \end{itemize}
+\item \emph{Generating-function identities.} J.~Choi, Y.-H.~Kiem and D.~Lee, \emph{Recursive algorithm and log-concavity of representations on the cohomology of \(\overline{\mathcal M}_{0,n}\)}, \href{https://arxiv.org/abs/2408.10728}{arXiv:2408.10728} (v1 2024-08-20; a preprint, with no journal reference as of 2026-11-27), Theorems~1.7, 5.9 and~5.11 \cite{CKL}. Theorem~2.1 of this paper rests on them. The equivariant generating functions go back to E.~Getzler, \href{https://arxiv.org/abs/alg-geom/9411004}{arXiv:alg-geom/9411004} \cite{Ge}; here they were used only as a finite cross-check (\(n\le72\)).
+\item \emph{Quasi-powers theorem.} H.-K.~Hwang, \emph{On convergence rates in the central limit theorems for combinatorial structures}, European J. Combin. 19 (1998) 329--343 \cite{Hw}. See also P.~Flajolet and R.~Sedgewick, \emph{Analytic Combinatorics}, Cambridge Univ. Press 2009, Theorem~IX.8 \cite{FS}.
+\item \emph{Method.}
+  \begin{itemize}
+  \item M.~Drmota, \emph{Random Trees}, Springer 2009: Theorems~2.19, 2.21 and~2.23, \S3.1.5 and Theorem~3.17 (P\'olya terms, after P\'olya and Otter) \cite{Dr}.
+  \item Singularity analysis: P.~Flajolet and A.~Odlyzko, SIAM J. Discrete Math. 3 (1990) 216--240 \cite{FO}.
+  \item M.~Drmota and B.~Gittenberger, J. Graph Theory 31 (1999) 227--253 \cite{DG}.
+  \end{itemize}
+\item \emph{Related, not used in the proof.} G.~B\'erczi and Y.-H.~Kiem, \href{https://arxiv.org/abs/2605.29151}{arXiv:2605.29151} \cite{BK}: the Poincar\'e polynomial of \(\Mbar_{0,n}/S_n\) is not real-rooted, which rules out Harper's route.
+\item \emph{This work.}
+  \begin{itemize}
+  \item On 2026-11-27 an automated AI research pipeline (Claude models), run privately by the repository owner, applied these methods to the CKL recursion. It produced the proof, the two-implementation interval certificate for \(\sigma^2>0\), and the write-up.
+  \item AI review rounds R1--R4 (commits \texttt{01b15d5}, \texttt{a01e04d}, \texttt{cd1c38a}, \texttt{fa1b088}) used Claude Opus, Fable and Sonnet.
+  \item \textbf{Expert verification required.} Verified so far with: four rounds of AI review (Claude Opus checker, Claude Fable adversary, Claude Sonnet arbiter; round~4 at \texttt{fa1b088}: two accepts with zero issues, no major issue); a two-implementation interval-arithmetic certificate for \(\sigma^2>0\) (python-flint/Arb and an independent rational-interval implementation), rerun from a clean clone; no Lean formalization (infeasible, reason given).
+  \item A write-up calling the proof ``proposed'' has been public at \url{https://github.com/nebulousice/choi-kiem-conjecture-5-2} since 2026-11-27T15:38:56Z (commit \texttt{5e8d9c3400}).
+  \end{itemize}
+\item \emph{Priority line.} ``A literature and catalog search on 2026-11-27 (rerun 17:17--17:28~UTC) found no published proof, disproof or claim of Conjecture~5.2. This records what was searched; it is not a priority or novelty claim.''
+\end{itemize}
+Here ``CKL'' abbreviates Choi--Kiem--Lee, and R1--R4 are review rounds 1--4 (Section~\ref{sec:status}); the reason Lean is infeasible is given in Section~\ref{sec:lean}.
+
+\subsection{Status}
+
+The proof is complete relative to the three cited inputs named in the abstract. It passed four rounds of review by AI referees, described in Section~\ref{sec:status}. The one computational step is certified by two independent programs, and the run was reproduced from a clean copy of the code (Section~\ref{sec:computer}). Nothing is formalized in a proof assistant (Section~\ref{sec:lean}).
+
+\subsection{Standard tools}
+
+We write \(D(a,r)\) for the open disc of centre \(a\) and radius \(r\), and \(D^m(a,r)\) for a polydisc. For a power series \(g\) we write \([x^n]g\) for the coefficient of \(x^n\). Subscripts on \(F\), \(\Phi\), \(\Psi\) denote partial derivatives. We use the following two standard results.
+
+\begin{ift}
+Let \(\Psi\) be analytic near \((a,b)\in\CC^m\times\CC\) with \(\Psi(a,b)=0\) and \(\Psi_y(a,b)\ne0\). Then there are \(r,s>0\) and an analytic map \(Y\colon D^m(a,r)\to D(b,s)\) such that, for \((v,y)\in D^m(a,r)\times D(b,s)\), we have \(\Psi(v,y)=0\) if and only if \(y=Y(v)\). If \(a,b\) are real and \(\Psi\) is real at real points, then \(Y\) is real at real points.
+\end{ift}
+
+The last sentence follows from uniqueness, since \(v\mapsto\overline{Y(\bar v)}\) is another solution.
+
+\begin{pringsheim}[{\cite[Thm.~IV.6]{FS}}]
+A power series with non-negative coefficients and finite radius of convergence \(\rho\) cannot be continued analytically to a neighbourhood of the point \(\rho\).
+\end{pringsheim}
+
+\section{Generating functions}\label{sec:gf}
+
+In this section we define the series that carry the Betti numbers and quote the theorem that identifies them. From the end of this section on, only the definitions \eqref{eq:tree} and \eqref{eq:Qpdef} are used.
+
+\emph{Notation.} The variable \(x\) marks the number \(n\) of points, and \(u\) marks half the cohomological degree. For \(f\in\QQ[u][[x]]\) and \(k\ge1\) put \(f^{[k]}(x,u)=f(x^k,u^k)\). For \(f\) without constant term the \emph{plethystic exponential} is
+\[
+\Exp_s(f)=\exp\Bigl(\sum_{k\ge1}\frac{s^k}{k}f^{[k]}\Bigr)=\sum_{r\ge0}s^r h_r[f],\qquad \Exp(f)=\Exp_1(f).
+\]
+This defines the series \(h_r[f]\). In the language of symmetric functions, \(h_r[f]\) is the plethysm of the complete homogeneous symmetric function \(h_r\) with \(f\), where the power sum \(p_k\) acts by \(p_k\circ f=f^{[k]}\); this is the convention of \cite[\S5.2]{CKL}. If \(f=O(x)\), then \(h_r[f]=O(x^r)\). For \(r\ge3\) let \(w_r(u)=u+u^2+\dots+u^{r-2}\).
+
+\begin{definition*}[the tree series]
+\(T(x,u)=\sum_{n\ge1}T_n(u)x^n\in\QQ[u][[x]]\) is the unique series with
+\begin{equation}\label{eq:tree}
+T=x+\sum_{r\ge3}w_r(u)\,h_r[T].
+\end{equation}
+\end{definition*}
+
+The coefficient \([x^n]h_r[T]\) involves only \(T_j\) with \(j\le n-r+1\). So \eqref{eq:tree} is a recursion for \(T_n\), which gives existence and uniqueness. Further, define three series by
+\begin{equation}\label{eq:Qpdef}
+\begin{gathered}
+Q=\Exp(T),\qquad (1+u)\,\pp=(1+u+xu)Q-\frac u2\bigl(Q^2-Q^{[2]}\bigr),\\
+\psibar=Q\bigl(u^2(Q-1)-u(u-1)x+1\bigr).
+\end{gathered}
+\end{equation}
+Write \(Q=\sum_{n\ge0}Q_n(u)x^n\), \(\pp=\sum_n\pp_n(u)x^n\) and \(\psibar=\sum_n\psibar_n(u)x^n\).
+
+\begin{theorem}[Choi--Kiem--Lee; Choi--Kiem; cited]\label{thm:CKL}
+The series of \eqref{eq:Qpdef} carry the Betti numbers of the three quotients:
+\begin{enumerate}
+\item \(Q_n(u)=\sum_k\dim H^{2k}(\Mbar_{0,n+1};\QQ)^{S_n}u^k\) for \(n\ge2\).
+\item \(\pp_n(u)=\sum_k\dim H^{2k}(\Mbar_{0,n};\QQ)^{S_n}u^k\) for \(n\ge3\).
+\item \(\psibar_n(u)=\sum_k\dim H^{2k}(\PP^1[n];\QQ)^{S_n}u^k\) for \(n\ge1\).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}[Sources]
+We use the notation of \cite{CKL}, with \(q\) for our \(x\) and \(t\) for our \(u\). Theorem~5.9 of \cite{CKL} states that
+\[
+\mathfrak{q}^+=q+\sum_{r\ge3}\Bigl(\sum_{i=1}^{r-2}t^i\Bigr)(h_r\circ\mathfrak{q}^+),\qquad \mathfrak{q}=\Exp(\mathfrak{q}^+).
+\]
+Theorem~5.11 of \cite{CKL} states that
+\[
+(1+t)\pp=(1+t+qt)\mathfrak{q}-\tfrac12t\bigl(\mathfrak{q}^2-\mathfrak{q}^{[2]}\bigr).
+\]
+Both are combined in \cite[Thm.~1.7]{CKL}. There \(\mathfrak{q}_{n,k}=\dim H^{2k}(\Mbar_{0,n+1})^{S_n}\) and \(\pp_{n,k}=\dim H^{2k}(\Mbar_{0,n})^{S_n}\). So \(T=\mathfrak{q}^+\) and \(Q=\mathfrak{q}\), which gives items~(1) and~(2). Item~(3) is identity (5.10) of \cite[Appendix]{CK}, namely
+\[
+\psibar=(1+\overline{\varphi})\bigl(u^2\overline{\varphi}-u(u-1)z+1\bigr),
+\]
+with \(\overline{\varphi}=Q-1\) and \(z=x\).
+\end{proof}
+
+\begin{remark*}
+The statements were read from the arXiv versions of \cite{CKL} and \cite{CK} on 2026-11-27; they are not re-derived here. Two caveats: \cite{CKL} is a preprint, and \cite{CK} derives (5.10) from its (5.8) in one line. Section~\ref{sec:computer} describes a finite cross-check: for \(n\le72\) the three families computed from \eqref{eq:tree}--\eqref{eq:Qpdef} agree exactly with an independent computation from Getzler's formula \cite[Thms.~5.7, 5.9]{Ge}. This check is not part of the proof.
+\end{remark*}
+
+\section{The tree equation: positivity, domain, closed form}\label{sec:tree}
+
+This section turns the formal recursion \eqref{eq:tree} into an analytic equation \(y=F(x,y,u)\). We first bound the coefficients \(T_n(u)\), then find a domain on which all the auxiliary series converge, and finally write \(F\) in closed form.
+
+Write \(T=\sum_{n,j}T_{n,j}x^nu^j\).
+
+\begin{lemma}\label{lem:pos}
+\begin{enumerate}
+\item \(T_n(u)\in\ZZ_{\ge0}[u]\), \(T_1=1\), \(T_2=0\), and \(\deg_uT_n\le n-2\) for \(n\ge3\). Hence \(\abs{T_n(u)}\le T_n(1)\max(1,\abs{u})^n\) for all \(n\ge1\) and \(u\in\CC\).
+\item \(T_n(1)\ge1\) for \(n\ge3\).
+\item \(T_n(1)\le4^n/3\) for all \(n\), and \(T(t,1)\le\frac43t\) for \(0\le t\le\frac14\).
+\item \(Q_n(u)\in\ZZ_{\ge0}[u]\) and \(Q_n(1)\ge1\) for all \(n\ge0\).
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+For any \(f=\sum f_{n,j}x^nu^j\) without constant term, \(\exp(\sum_k s^kf^{[k]}/k)=\prod_{n,j}(1-sx^nu^j)^{-f_{n,j}}\), because \(-\log(1-sx^nu^j)=\sum_ks^kx^{kn}u^{kj}/k\). So
+\begin{equation}\label{eq:prod}
+\sum_{r\ge0}s^rh_r[T]=\prod_{n,j}(1-sx^nu^j)^{-T_{n,j}}.
+\end{equation}
+
+(1) We use induction on \(n\). For \(r\ge3\) the coefficient \([s^rx^n]\) of \eqref{eq:prod} involves only factors with first index \(n'\le n-2\). If \(T_{n',j}\in\ZZ_{\ge0}\) for \(n'<n\), these factors have non-negative integer coefficients, so \(T_n\in\ZZ_{\ge0}[u]\) by \eqref{eq:tree}. Since \(h_r[T]=O(x^r)\), we get \(T_1=1\) and \(T_2=0\). For the degree, a monomial of \([s^rx^n]\) in \eqref{eq:prod} is a product of \(r\) monomials \(x^{n_i}u^{j_i}\) with \(T_{n_i,j_i}\ne0\) and \(\sum n_i=n\). By induction \(j_i\le\max(0,n_i-2)\le n_i-1\), so \(\sum j_i\le n-r\). Since \(\deg w_r=r-2\), the total degree is at most \(n-2\). (For example \(T_3=u\), \(T_4=u+u^2\), \(T_5=u+2u^2+u^3\). Since \(\deg T_1=0\), the bound \(n-2\) fails at \(n=1\); the last sentence of~(1) uses only \(\deg T_n\le n\).)
+
+(2) The factor \((1-sx)^{-T_{1,0}}=(1-sx)^{-1}\) contributes \(s^nx^n\). So \(T_n\ge w_n\) coefficientwise, and \(T_n(1)\ge n-2\ge1\).
+
+(3) At \(u=1\), \eqref{eq:prod} is a product \(\prod_c(1-a_c)^{-1}\) over monomials \(a_c=sx^{n_c}\), with \(T_n(1)\) copies of \(sx^n\). Coefficientwise \(\prod_c(1-a_c)^{-1}\le(1-\sum_ca_c)^{-1}\), because every multiset of the \(a_c\) is realised by at least one word. Hence \(h_r[T]|_{u=1}\le T(x,1)^r\) coefficientwise. Let \(s(x)=\sum s_nx^n\) be the power series solution of \(s=x+\sum_{r\ge3}(r-2)s^r=x+s^3/(1-s)^2\). By induction on \(n\) in \eqref{eq:tree}, \(T_n(1)\le s_n\). Put \(s^{(0)}=0\) and \(s^{(i+1)}=x+(s^{(i)})^3/(1-s^{(i)})^2\). These series have non-negative coefficients, increase coefficientwise, and satisfy \([x^n]s^{(i)}=s_n\) for \(i\ge n\). If \(s^{(i)}(\frac14)\le\frac13\), then \(s^{(i+1)}(\frac14)\le\frac14+\frac{1/27}{4/9}=\frac13\). So \(\sum_{n\le N}s_n4^{-n}\le\frac13\) for all \(N\). Hence \(s(\frac14)\le\frac13\) and \(s_n\le4^n/3\). For \(0\le t\le\frac14\) we get \(T(t,1)\le s(t)\le4t\cdot s(\frac14)\le\frac43t\).
+
+(4) \(Q\) is \eqref{eq:prod} at \(s=1\). So it has non-negative integer coefficients, and \(Q\ge(1-x)^{-1}\) coefficientwise.
+\end{proof}
+
+Let \(\rho_T\) be the radius of convergence of \(T(x,1)\). By Lemma~\ref{lem:pos}, \(\frac14\le\rho_T\le1\). Put \(\theta(x,u)=\abs{x}\max(1,\abs{u})\) and
+\[
+G_T=\{(x,u)\in\CC^2\mid \theta(x,u)<\rho_T\},\qquad
+\Omega=\{(x,u)\in\CC^2\mid \abs{u}<2,\ \theta(x,u)<\tfrac12\}.
+\]
+
+\begin{lemma}[domain; P\'olya terms]\label{lem:domain}
+\begin{enumerate}
+\item \(T\) converges absolutely on \(G_T\), and \(\abs{T(x,u)}\le T(\theta(x,u),1)\) there. So \(T\) is analytic on \(G_T\).
+\item For \(k\ge2\) the function \(t_k(x,u)=T(x^k,u^k)\) is analytic on \(\Omega\), and there \(\abs{t_k(x,u)}\le\frac43\theta(x,u)^k\) and \(\abs{u^kt_k(x,u)}\le\frac43\theta(x,u)^k\).
+\item \(\Lambda_s(x,u)=\sum_{k\ge2}\frac{s^k}{k}t_k(x,u)\) is analytic on the set of \((s,x,u)\) with \((x,u)\in\Omega\) and \(\abs{s}\theta(x,u)<1\). This set contains the points with \(s=1\) and with \(s=u\), for every \((x,u)\in\Omega\).
+\item \(Q^{[2]}(x,u)=Q(x^2,u^2)=\exp(\sum_{k\ge1}t_{2k}/k)\) is analytic on \(\Omega\).
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(1) follows from Lemma~\ref{lem:pos}(1). (2) On \(\Omega\) we have \(\abs{x^k}\max(1,\abs{u^k})=\theta^k\le\theta^2<\frac14\le\rho_T\). So (1) and Lemma~\ref{lem:pos}(3) give \(\abs{t_k}\le T(\theta^k,1)\le\frac43\theta^k\). For the second bound we may assume \(\abs{u}>1\). By Lemma~\ref{lem:pos}(1), \(\deg T_1=0\) and \(\deg T_n\le n-2\) for \(n\ge3\). So, for \(n\ge3\),
+\[
+\abs{u^kT_n(u^k)x^{kn}}\le T_n(1)\abs{u}^{k(n-1)}\abs{x}^{kn}\le T_n(1)(\abs{x}\abs{u})^{kn},
+\]
+and \(\abs{u^kT_1x^k}=(\abs{x}\abs{u})^k\). Summing over \(n\) gives \(\abs{u^kt_k}\le T(\theta^k,1)\le\frac43\theta^k\). (3) The series is dominated by \(\frac43\sum_k(\abs{s}\theta)^k\), locally uniformly. On \(\Omega\) we have \(\theta<\frac12\) and \(\abs{u}\theta<1\). (4) follows from (2).
+\end{proof}
+
+\begin{definition}[the function \(F\)]\label{def:F}
+For \((x,u)\in\Omega\), \(y\in\CC\) and \(\abs{s}\theta(x,u)<1\) put \(E_s(x,y,u)=\exp(sy+\Lambda_s(x,u))\), and let \(Z_r(x,y,u)=[s^r]E_s(x,y,u)\), so that \(Z_0=1\) and \(Z_1=y\). Define
+\begin{equation}\label{eq:F}
+F(x,y,u)=x+\sum_{r\ge3}w_r(u)Z_r(x,y,u),\qquad \Phi=F-y.
+\end{equation}
+\end{definition}
+
+\begin{lemma}[properties of \(F\)]\label{lem:F}
+\begin{enumerate}
+\item The series \eqref{eq:F} converges locally uniformly on \(\Omega\times\CC\). So \(F\) is analytic there, and it is real at real points.
+\item For \((x,u)\in\Omega\) with \(u\notin\{0,1\}\),
+\begin{equation}\label{eq:Fclosed}
+F=x+y+\frac{1+u}{u}+\frac{E_u-u^2E_1}{u(u-1)},\qquad F_y=1+\frac{E_u-uE_1}{u-1}.
+\end{equation}
+\item At \(u=1\), let \(R(x)=\Lambda_1(x,1)=\sum_{k\ge2}T(x^k,1)/k\) and \(R_2(x)=\sum_{k\ge2}T(x^k,1)\), both analytic on \(\abs{x}<\frac12\), and \(E_1=e^{y+R(x)}\). Then
+\begin{equation}\label{eq:Fu1}
+\begin{aligned}
+F(x,y,1)&=x+y+2+E_1(y+R_2-2), & F_y&=1+E_1(y+R_2-1),\\
+F_{yy}&=E_1(y+R_2), & F_x&=1+E_1\bigl(R'(y+R_2-2)+R_2'\bigr).
+\end{aligned}
+\end{equation}
+\item \(F(x,y,1)-x\) is a power series in \((x,y)\) with non-negative coefficients, convergent for \(\abs{x}<\frac12\) and \(y\in\CC\). In particular \(F_x(x,y,1)\ge1\) for real \(0\le x<\frac12\) and \(y\ge0\).
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(1) Fix a point and choose \(R_0\) with \(\max(1,\abs{u})<R_0<1/\theta\). This is possible since \(\max(1,\abs{u})\theta<1\) on \(\Omega\), and the inequalities persist in a neighbourhood. Cauchy's estimate gives \(\abs{Z_r}\le R_0^{-r}\sup_{\abs{s}=R_0}\abs{E_s}\), and \(\abs{w_r(u)}\le(r-2)\max(1,\abs{u})^{r}\). So the series converges locally uniformly.
+
+(2) For \(u\notin\{0,1\}\) let \(c_r(u)=(u^{r-1}-u)/(u-1)\). Then \(c_r=w_r\) for \(r\ge3\), \(c_2=0\), \(c_1=-1\) and \(c_0=-(1+u)/u\). Since \(\sum_ru^rZ_r=E_u\) and \(\sum_rZ_r=E_1\) converge absolutely,
+\[
+\sum_{r\ge3}w_rZ_r-y-\frac{1+u}{u}=\sum_{r\ge0}c_rZ_r=\frac{E_u/u-uE_1}{u-1}.
+\]
+This is the formula for \(F\). The formula for \(F_y\) follows from \(\partial_yE_s=sE_s\).
+
+(3) We have \(w_r(1)=r-2\) and \(\sum_{r\ge0}(r-2)Z_r=\partial_sE_s|_{s=1}-2E_1=E_1(y+R_2)-2E_1\). Subtracting the terms \(r=0,1,2\), which sum to \(-2-y\), gives the formula for \(F\). The others follow by differentiation.
+
+(4) \(Z_r(x,y,1)=[s^r]e^{sy}e^{\Lambda_s(x,1)}\), and \(\Lambda_s(x,1)\) has non-negative coefficients in \((s,x)\) by Lemma~\ref{lem:pos}(1).
+\end{proof}
+
+\begin{lemma}[the functional equation as an analytic identity]\label{lem:funeq}
+On \(G_T\cap\Omega\),
+\begin{equation}\label{eq:funeq}
+T(x,u)=F(x,T(x,u),u),\qquad Q(x,u)=E_1(x,T(x,u),u)=\exp\bigl(T(x,u)+\Lambda_1(x,u)\bigr),
+\end{equation}
+and, for \(u\notin\{0,1\}\),
+\begin{equation}\label{eq:Eu}
+E_u(x,T,u)=u^2Q-(u-1)(1+u+ux),\qquad F_y(x,T(x,u),u)=u\bigl(Q(x,u)-1-x\bigr).
+\end{equation}
+At \(u=1\) we have \(Q(x,1)\bigl(2-T(x,1)-R_2(x)\bigr)=2+x\) and \(F_y(x,T(x,1),1)=Q(x,1)-1-x\).
+\end{lemma}
+
+\begin{proof}
+Fix \(u\) with \(\abs{u}<2\). Both sides of the first identity are analytic in \(x\) on the disc \(\abs{x}<\min(\rho_T,\frac12)/\max(1,\abs{u})\). The function \((s,x)\mapsto\exp(sT(x,u)+\Lambda_s(x,u))=\exp(\sum_{k\ge1}s^kT(x^k,u^k)/k)\) is analytic near \((0,0)\), and its Taylor expansion is the formal series \(\sum_rs^rh_r[T]\), with \(h_r[T]=O(x^r)\). Since \eqref{eq:F} converges locally uniformly, the Taylor coefficient \([x^n]\) of \(F(x,T(x,u),u)\) is \(\delta_{n,1}+\sum_{3\le r\le n}w_r(u)[x^n]h_r[T]\), which is \(T_n(u)\) by \eqref{eq:tree}. So the two analytic functions have the same Taylor series at \(x=0\). The same argument gives the formula for \(Q\).
+
+For \eqref{eq:Eu}, insert \(F=y\) into \eqref{eq:Fclosed}. This gives \(E_u-u^2E_1=-(u-1)(1+u+ux)\). Inserting this into the formula for \(F_y\) gives the second identity. The statements at \(u=1\) follow from \eqref{eq:Fu1} in the same way: \(F=y\) reads \(E_1(2-y-R_2)=2+x\), hence \(F_y=1+E_1(y+R_2-1)=E_1-1-x\).
+\end{proof}
+
+\section{The characteristic point at \texorpdfstring{\(u=1\)}{u=1}}\label{sec:char}
+
+In this section we locate the radius of convergence \(\rho\) of \(T(x,1)\). We show that it is the unique zero of an explicit function \(h\), that it lies below \(\frac12\) (so inside the domain of \(F\)), and that it is the only point of the circle \(\abs{x}=\rho\) where the implicit equation degenerates.
+
+Throughout this section \(u=1\), \(y(x)=T(x,1)\), and \(R\), \(R_2\) are as in Lemma~\ref{lem:F}(3). Put
+\[
+h(x)=1-R_2(x)+R(x)-\log(2+x)=1-\sum_{k\ge2}\frac{k-1}{k}T(x^k,1)-\log(2+x),\qquad 0\le x<\tfrac12 .
+\]
+The sum has non-negative coefficients. So \(h\) is continuous and strictly decreasing, and \(h(0)=1-\log2>0\).
+
+\begin{lemma}\label{lem:h}
+\(h(\frac9{20})<0\).
+\end{lemma}
+
+\begin{proof}
+We have \(T(t,1)\ge t\), and all terms are non-negative. So
+\[
+h\bigl(\tfrac9{20}\bigr)\le1-\sum_{k=2}^{6}\frac{k-1}{k}\Bigl(\frac9{20}\Bigr)^k-\log\frac{49}{20}.
+\]
+The sum equals \(\frac{27447903}{128000000}\approx0.21444>\frac{21}{100}\). Next, the tail \(\sum_{j\ge3}t^j/j!\) is at most \(\frac{t^3}{6}(1-\frac t4)^{-1}\), so \(e^{2/5}\le1+\frac25+\frac2{25}+\frac{8/750}{1-1/10}=\frac{1007}{675}<\frac32\). Hence \(\log\frac{49}{20}>\log\frac94=2\log\frac32>\frac45\). So \(h(\frac9{20})<1-\frac{21}{100}-\frac45<0\).
+\end{proof}
+
+\begin{proposition}[characteristic point]\label{prop:char}
+Let \(\rho=\rho_T\).
+\begin{enumerate}
+\item \(\rho\le\frac9{20}\). In particular \(\{(x,1)\mid\abs{x}\le\rho\}\subset\Omega\) and \(G_T\cap\{\abs{u}<2\}\subset\Omega\).
+\item \(\tau:=T(\rho,1)=\sum_nT_n(1)\rho^n<1\).
+\item \(F(\rho,\tau,1)=\tau\) and \(F_y(\rho,\tau,1)=1\). Equivalently, \(\tau+R_2(\rho)=1\) and \(Q(\rho,1)=e^{\tau+R(\rho)}=2+\rho\).
+\item \(\rho\) is the unique zero of \(h\) in \((0,\frac12)\).
+\item \(F_{yy}(\rho,\tau,1)=2+\rho>0\) and \(F_x(\rho,\tau,1)=1+(2+\rho)D(\rho)\ge1\), where \(D(x)=R_2'(x)-R'(x)=\sum_{k\ge2}(k-1)x^{k-1}T_x(x^k,1)\ge0\).
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Let \(x_m=\min(\rho,\frac12)\). On \([0,x_m)\) the function \(y\) is analytic with \(y\ge0\) and \(y'\ge1\) (as \(T_1=1\)), and \(y=F(x,y,1)\) by Lemma~\ref{lem:funeq}.
+
+(a) \emph{\(F_y(x,y(x),1)<1\) on \([0,x_m)\).} Differentiating \(y=F(x,y,1)\) gives \(y'(1-F_y)=F_x\ge1\) (Lemma~\ref{lem:F}(4)). Since \(y'>0\), we get \(1-F_y>0\). By \eqref{eq:Fu1} this says
+\begin{equation}\label{eq:ybound}
+y(x)+R_2(x)<1\qquad(0\le x<x_m).
+\end{equation}
+
+(b) \emph{\(h>0\) on \([0,x_m)\).} Fix \(x\) and let \(\varphi(v)=F(x,v,1)-v=x+2+e^{v+R}(v+R_2-2)\). Then \(\varphi'(v)=e^{v+R}(v+R_2-1)<0\) for \(v<v^\ast:=1-R_2(x)\). By \eqref{eq:ybound}, \(y(x)<v^\ast\). Since \(\varphi(y(x))=0\), we get \(\varphi(v^\ast)<0\). That is, \(2+x<e^{1-R_2+R}\), which says \(h(x)>0\).
+
+(c) By (b), Lemma~\ref{lem:h} and the monotonicity of \(h\), we get \(x_m\le\frac9{20}\). Hence \(\rho\le\frac9{20}\) and \(x_m=\rho\). This proves~(1).
+
+(d) By \eqref{eq:ybound}, \(y(x)<1-R_2(x)\) on \([0,\rho)\). So \(\tau=\lim_{x\uparrow\rho}y(x)\le1-R_2(\rho)<1\). By monotone convergence, \(\tau=\sum T_n(1)\rho^n\). This proves~(2).
+
+(e) \(F(\cdot,\cdot,1)\) is analytic at \((\rho,\tau)\) because \(\rho<\frac12\). By continuity, \(F(\rho,\tau,1)=\tau\) and \(F_y(\rho,\tau,1)\le1\). Suppose that \(F_y(\rho,\tau,1)<1\). The analytic implicit function theorem gives \(r,s>0\) and an analytic function \(\tilde y\) on \(D(\rho,r)\) which is the only solution of \(v=F(x,v,1)\) with values in \(D(\tau,s)\). Since \(y(x)\to\tau\), we have \(y=\tilde y\) on an interval \((\rho-r',\rho)\), hence on the connected set \(D(0,\rho)\cap D(\rho,r)\). So \(T(\cdot,1)\) continues analytically to a neighbourhood of \(\rho\). This contradicts Pringsheim's theorem. Hence \(F_y(\rho,\tau,1)=1\), that is, \(\tau+R_2(\rho)=1\) by \eqref{eq:Fu1}. Then \(F=\tau\) reads \(e^{\tau+R(\rho)}(2-\tau-R_2(\rho))=2+\rho\), that is, \(e^{\tau+R(\rho)}=2+\rho\). Finally \(Q(\rho,1)=e^{\tau+R(\rho)}\) by \eqref{eq:funeq} and continuity. This proves~(3).
+
+(f) By (e), \(h(\rho)=\tau+R(\rho)-\log(2+\rho)=0\). Since \(h\) is strictly decreasing, this proves~(4).
+
+(g) Inserting \(\tau+R_2(\rho)=1\) and \(E_1=2+\rho\) into \eqref{eq:Fu1} proves~(5).
+\end{proof}
+
+\begin{lemma}[no other characteristic point on the circle]\label{lem:circle}
+If \(\abs{x_0}=\rho\) and \(x_0\ne\rho\), then \(F_y(x_0,T(x_0,1),1)\ne1\).
+\end{lemma}
+
+\begin{proof}
+The series \(Q(x,1)=\sum Q_n(1)x^n\) has non-negative coefficients, and \(\sum Q_n(1)\rho^n=e^{\tau+R(\rho)}=2+\rho\). So it converges absolutely on \(\abs{x}\le\rho\), and so does \(T(x,1)\). By Lemma~\ref{lem:funeq} and continuity, \(F_y(x,T(x,1),1)=g(x):=Q(x,1)-1-x=\sum_{n\ge2}Q_n(1)x^n\) for \(\abs{x}\le\rho\), and \(g(\rho)=1\). Suppose \(\abs{x_0}=\rho\) and \(g(x_0)=1\). Then \(\sum_{n\ge2}Q_n(1)(\rho^n-\re(x_0^n))=0\), and all terms are non-negative. So \(x_0^n=\rho^n\) whenever \(Q_n(1)>0\). By Lemma~\ref{lem:pos}(4) this holds for \(n=2\) and \(n=3\). Hence \(x_0=\rho\).
+\end{proof}
+
+\section{Singular inversion with a parameter}\label{sec:inversion}
+
+This section proves a local normal form for the solutions of \(\Phi(x,y,u)=0\) near a point where \(\Phi_y\) vanishes. It is classical \cite[\S VI.7, \S VII.4]{FS}; we include a proof because we need the dependence on the parameter \(u\) and the real case explicitly.
+
+\begin{lemma}[local structure at a critical point]\label{lem:local}
+Let \(\Phi(x,y,u)\) be analytic near \(p_0=(x_0,y_0,u_0)\in\CC^3\), with \(x_0\ne0\) and
+\[
+\Phi(p_0)=0,\qquad\Phi_y(p_0)=0,\qquad\Phi_x(p_0)\ne0,\qquad\Phi_{yy}(p_0)\ne0 .
+\]
+Then there exist an open neighbourhood \(\cN\) of \(p_0\), numbers \(r,\varepsilon>0\), analytic functions \(\rho,\tau\) on \(D(u_0,\varepsilon)\) and a bounded analytic function \(V\) on \(D(0,r)\times D(u_0,\varepsilon)\) with the following properties.
+\begin{enumerate}
+\item \(\rho(u_0)=x_0\), \(\tau(u_0)=y_0\), \(\rho(u)\ne0\), and \(\Phi(\rho(u),\tau(u),u)=0=\Phi_y(\rho(u),\tau(u),u)\).
+\item \(V(0,u)=\tau(u)\); the map \(w\mapsto V(w,u)\) is injective on \(D(0,r)\); and \(V_w(0,u_0)^2=2x_0\Phi_x(p_0)/\Phi_{yy}(p_0)\).
+\item If \((x,y,u)\in\cN\) and \(\Phi(x,y,u)=0\), then there is \(w\in D(0,r)\) with \(w^2=1-x/\rho(u)\) and \(y=V(w,u)\).
+\item (Real case.) Suppose that \(p_0\) is real, \(\Phi\) is real at real points, and \(x_0\Phi_x(p_0)/\Phi_{yy}(p_0)>0\). Then \(V\) can be chosen with \(V_w(0,u_0)>0\), and \(\rho\), \(\tau\), \(V\) are real at real points. Moreover, if \((x,y,u_0)\in\cN\) is real with \(\Phi(x,y,u_0)=0\) and \(y<y_0\), then the \(w\) of~(3) is real and negative.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+\emph{Step 1.} By the implicit function theorem (as \(\Phi_x(p_0)\ne0\)) there are \(r_1,r_1'>0\) and an analytic map \(\xi\colon D(y_0,r_1)\times D(u_0,r_1)\to D(x_0,r_1')\) such that, on \(D(x_0,r_1')\times D(y_0,r_1)\times D(u_0,r_1)\), we have \(\Phi=0\) if and only if \(x=\xi(y,u)\). Differentiating \(\Phi(\xi(y,u),y,u)=0\) in \(y\) gives
+\begin{equation}\label{eq:xi}
+\Phi_x\xi_y+\Phi_y=0,\qquad\Phi_{xx}\xi_y^2+2\Phi_{xy}\xi_y+\Phi_x\xi_{yy}+\Phi_{yy}=0 .
+\end{equation}
+At \((y_0,u_0)\) this gives \(\xi_y=0\) and \(\xi_{yy}=-\Phi_{yy}(p_0)/\Phi_x(p_0)\ne0\).
+
+\emph{Step 2.} By the implicit function theorem applied to \(\xi_y(y,u)=0\), there is an analytic \(\tau(u)\) near \(u_0\) with \(\tau(u_0)=y_0\) and \(\xi_y(\tau(u),u)=0\). Put \(\rho(u)=\xi(\tau(u),u)\). Then \(\Phi(\rho(u),\tau(u),u)=0\), and \(\Phi_y(\rho(u),\tau(u),u)=0\) by \eqref{eq:xi}. After shrinking so that \(\rho(u)\ne0\), this is~(1).
+
+\emph{Step 3.} By Taylor's formula with integral remainder, \(\xi(y,u)-\rho(u)=(y-\tau(u))^2m(y,u)\), where
+\[
+m(y,u)=\int_0^1(1-t)\,\xi_{yy}\bigl(\tau(u)+t(y-\tau(u)),u\bigr)\,\dd t
+\]
+is analytic near \((y_0,u_0)\) and \(m(y_0,u_0)=\frac12\xi_{yy}(y_0,u_0)\). Let \(\lambda=-m/\rho(u)\). Then \(\lambda_0:=\lambda(y_0,u_0)=\Phi_{yy}(p_0)/(2x_0\Phi_x(p_0))\ne0\). On a small polydisc \(\abs{\lambda-\lambda_0}<\abs{\lambda_0}/2\), so \(\lambda\) has an analytic square root \(\kappa\) there. Put \(W(y,u)=(y-\tau(u))\kappa(y,u)\). Then
+\begin{equation}\label{eq:W}
+W(y,u)^2=1-\frac{\xi(y,u)}{\rho(u)},\qquad W(\tau(u),u)=0,\qquad W_y(y_0,u_0)=\kappa(y_0,u_0)\ne0 .
+\end{equation}
+
+\emph{Step 4.} By the implicit function theorem applied to \(W(y,u)-w=0\) at \((w,u,y)=(0,u_0,y_0)\), there are \(r,\varepsilon,s>0\) and an analytic map \(V\colon D(0,r)\times D(u_0,\varepsilon)\to D(y_0,s)\) such that, for \((w,u,y)\in D(0,r)\times D(u_0,\varepsilon)\times D(y_0,s)\), we have \(W(y,u)=w\) if and only if \(y=V(w,u)\). In particular \(V\) is bounded. Shrinking \(\varepsilon\) so that \(\tau(u)\in D(y_0,s)\) gives \(V(0,u)=\tau(u)\). If \(V(w_1,u)=V(w_2,u)=y\), then \(w_1=W(y,u)=w_2\); this is injectivity. Finally \(V_w(0,u_0)=1/\kappa(y_0,u_0)\), so \(V_w(0,u_0)^2=1/\lambda_0\). This is~(2).
+
+\emph{Step 5.} Choose \(s'\le s\) and shrink \(\varepsilon\) so that \(\abs{W(y,u)}<r\) on \(D(y_0,s')\times D(u_0,\varepsilon)\) and all earlier conditions hold there. Let \(\cN=D(x_0,r_1')\times D(y_0,s')\times D(u_0,\varepsilon)\). If \((x,y,u)\in\cN\) and \(\Phi=0\), then \(x=\xi(y,u)\) by Step~1. So \(w:=W(y,u)\) satisfies \(w^2=1-x/\rho(u)\) by \eqref{eq:W}, \(\abs{w}<r\), and \(y=V(w,u)\) by Step~4. This is~(3).
+
+\emph{Step 6 (real case).} By the real part of the implicit function theorem, \(\xi,\tau,\rho,m,\lambda\) are real at real points, and \(\lambda_0>0\). Take \(\kappa\) to be the square root with positive real part; it is real and positive at real points. Then \(W\) and \(V\) are real at real points, and \(V_w(0,u_0)=1/\kappa(y_0,u_0)>0\). For real \(y<y_0\) we have \(W(y,u_0)=(y-y_0)\kappa(y,u_0)<0\). By the injectivity of \(V(\cdot,u_0)\), the \(w\) of~(3) is \(W(y,u_0)\).
+\end{proof}
+
+\begin{remark}\label{rem:drmota-rep}
+Write \(V(w,u)=V_e(w^2,u)+wV_o(w^2,u)\). Then (3) reads
+\[
+y=\mathcal{G}(x,u)\pm \mathcal{H}(x,u)\sqrt{1-x/\rho(u)},
+\]
+with \(\mathcal{G}=V_e(1-x/\rho(u),u)\) and \(\mathcal{H}=V_o(1-x/\rho(u),u)\) analytic near \((x_0,u_0)\), and \(\mathcal{H}(\rho(u),u)=V_w(0,u)\). This is the representation (2.21) of \cite[Thm.~2.21]{Dr}.
+\end{remark}
+
+\section{Uniform continuation: a variant of a theorem of Drmota}\label{sec:uniform}
+
+This section shows that, for every complex \(u\) near \(1\), the tree series continues analytically beyond its circle of convergence, except along a slit, and has a square-root singularity at a point \(\rho(u)\), uniformly in \(u\). Drmota \cite[Thm.~2.21]{Dr} proves this under a hypothesis that fails here; Remark~\ref{rem:drmota} explains the difference.
+
+For \(\eta>0\) let \(\DD_\eta=\{z\in\CC\mid\abs{z}<1+\eta\}\setminus[1,1+\eta)\). This is a disc with a slit along the real axis; it contains every \(\Delta\)-domain of radius \(1+\eta\). We write \(\sqrt{\cdot}\) for the principal branch of the square root.
+
+\begin{theorem}\label{thm:unif}
+Let \(y(x,u)=\sum_{n\ge1}y_n(u)x^n\) with \(y_n\in\RR_{\ge0}[u]\) and \(\deg y_n\le n\). Let \(\rho\in(0,\infty)\) be the radius of convergence of \(y(x,1)\), and assume \(\tau:=\sum_ny_n(1)\rho^n<\infty\). Put \(G_0=\{(x,u)\mid\abs{x}\max(1,\abs{u})<\rho\}\). Let \(\Omega\subset\CC^2\) be open with \(\{(x,1)\mid\abs{x}\le\rho\}\subset\Omega\), and let \(F\) be analytic on \(\Omega\times\CC\) and real at real points. Assume:
+\begin{itemize}
+\item[(H1)] \(y(x,u)=F(x,y(x,u),u)\) for \((x,u)\in G_0\cap\Omega\);
+\item[(H2)] \(F_y(\rho,\tau,1)=1\), \(F_x(\rho,\tau,1)>0\) and \(F_{yy}(\rho,\tau,1)>0\);
+\item[(H3)] \(F_y(x_0,y(x_0,1),1)\ne1\) for every \(x_0\) with \(\abs{x_0}=\rho\) and \(x_0\ne\rho\).
+\end{itemize}
+Then there are \(\varepsilon,\eta,\delta>0\), analytic functions \(\rho(\cdot)\) and \(\tau(\cdot)\) on \(D(1,\varepsilon)\), and a bounded analytic function \(V\) on \(D(0,\sqrt\delta)\times D(1,\varepsilon)\) such that the following hold.
+\begin{itemize}
+\item[(a)] \(\rho(1)=\rho\), \(\tau(1)=\tau\), \(\rho(u)\ne0\), \(\rho\) and \(\tau\) are real for real \(u\), and
+\begin{equation}\label{eq:charsys}
+F(\rho(u),\tau(u),u)=\tau(u),\qquad F_y(\rho(u),\tau(u),u)=1\qquad(u\in D(1,\varepsilon)).
+\end{equation}
+\item[(b)] \(V(0,u)=\tau(u)\) and \(V_w(0,1)=\sqrt{2\rho F_x(\rho,\tau,1)/F_{yy}(\rho,\tau,1)}>0\).
+\item[(c)] For each \(u\in D(1,\varepsilon)\), the function \(z\mapsto\hat y(z,u):=y(\rho(u)z,u)\), defined for \(\abs{z}<r(u):=\rho/(\abs{\rho(u)}\max(1,\abs{u}))\), extends analytically to \(\DD_\eta\). The extension is analytic and bounded on \(\DD_\eta\times D(1,\varepsilon)\).
+\item[(d)] \(\hat y(z,u)=V(-\sqrt{1-z},u)\) for \(u\in D(1,\varepsilon)\) and \(z\in\DD_\eta\) with \(\abs{1-z}<\delta\).
+\end{itemize}
+\end{theorem}
+
+In the variable \(x=\rho(u)z\), the conclusion says: \(y(\cdot,u)\) continues analytically to the slit disc \(\rho(u)\DD_\eta\), and near \(x=\rho(u)\) it equals \(\mathcal{G}(x,u)-\mathcal{H}(x,u)\sqrt{1-x/\rho(u)}\), with \(\mathcal{G},\mathcal{H}\) as in Remark~\ref{rem:drmota-rep} and \(\mathcal{H}(\rho,1)=V_w(0,1)>0\).
+
+The proof first describes \(y\) near the point \(x=\rho\) using Lemma~\ref{lem:local}, then near the other points of the circle using (H3), and finally glues the local pieces.
+
+\begin{proof}
+\emph{Step 0 (the closed region).} Since \(\abs{y_n(u)}\le y_n(1)\max(1,\abs{u})^n\), the series converges uniformly on \(\overline{G_0}=\{\abs{x}\max(1,\abs{u})\le\rho\}\). So \(y\) is analytic on \(G_0\), continuous on \(\overline{G_0}\), and \(\abs{y}\le\tau\) there. By continuity, (H1) gives \(F(x_0,y(x_0,1),1)=y(x_0,1)\) for \(\abs{x_0}=\rho\); in particular \(F(\rho,\tau,1)=\tau\). The function \(y(\cdot,1)\) is strictly increasing on \([0,\rho]\).
+
+\emph{Step 1 (near \(\rho\)).} Apply Lemma~\ref{lem:local} to \(\Phi=F-y\) at \(p_0=(\rho,\tau,1)\), in the real case. Its hypotheses hold: \(\Phi(p_0)=0\), \(\Phi_y(p_0)=0\), \(\Phi_x(p_0)=F_x>0\) and \(\Phi_{yy}(p_0)=F_{yy}>0\). This gives \(\cN\), a radius \(r_V\), a number \(\varepsilon_A\), functions \(\rho(\cdot)\), \(\tau(\cdot)\), \(V\), and properties (a) and (b). For \(u\in D(1,\varepsilon_A)\) let \(r(u)\) be as in (c); then \(r\) is continuous and \(r(1)=1\). Let \(\cK=\{(z,u)\mid u\in D(1,\varepsilon_A),\ \abs{z}\le r(u)\}\). On \(\cK\) the function \(\hat y(z,u)=y(\rho(u)z,u)\) is defined (because \((\rho(u)z,u)\in\overline{G_0}\)), continuous, bounded by \(\tau\), and analytic in the interior.
+
+The map \((z,u)\mapsto(\rho(u)z,\hat y(z,u),u)\) is continuous on \(\cK\) and sends \((1,1)\) to \(p_0\in\cN\). Also \((\rho,1)\in\Omega\), which is open, and \(r\) is continuous with \(r(1)=1\). So there are \(\delta\in(0,\min(1,r_V^2))\) and \(\varepsilon_1\in(0,\varepsilon_A)\) such that
+\begin{equation}\label{eq:nbhd}
+\begin{gathered}
+(\rho(u)z,\hat y(z,u),u)\in\cN\ \text{ and }\ (\rho(u)z,u)\in\Omega\\
+\text{for all }(z,u)\in\cK\text{ with }\abs{z-1}<\delta\text{ and }\abs{u-1}<\varepsilon_1,\\
+\text{and } r(u)>1-\delta/2\ \text{ for }\abs{u-1}<\varepsilon_1 .
+\end{gathered}
+\end{equation}
+
+\emph{Claim 1.} Let \(\abs{u-1}<\varepsilon_1\) and \(z\in C_u:=\{z\mid\abs{z}<r(u),\ \abs{z-1}<\delta\}\setminus[1,\infty)\). Then \(\hat y(z,u)=V(-\sqrt{1-z},u)\).
+
+\emph{Proof of Claim 1.} Let \((z,u)\) be as stated and \(x=\rho(u)z\). Then \((x,u)\in G_0\cap\Omega\) by \eqref{eq:nbhd}, so \(\Phi(x,\hat y(z,u),u)=0\) by (H1). By \eqref{eq:nbhd} and Lemma~\ref{lem:local}(3) there is \(w\) with \(\abs{w}<r_V\), \(w^2=1-x/\rho(u)=1-z\) and \(\hat y(z,u)=V(w,u)\). So \(w=\pm\sqrt{1-z}\), and \(\sqrt{1-z}\ne0\). Both values lie in \(D(0,r_V)\), because \(\abs{1-z}<\delta<r_V^2\). Let \(N_u^{\pm}=\{z\in C_u\mid\hat y(z,u)=V(\pm\sqrt{1-z},u)\}\). These sets are closed in \(C_u\) and cover \(C_u\). They are disjoint, because \(V(\cdot,u)\) is injective (Lemma~\ref{lem:local}(2)).
+
+The set \(C_u\) is connected. Indeed, \(C_u=L\setminus[1,\infty)\) for the convex open set \(L=D(0,r(u))\cap D(1,\delta)\), which is non-empty by \eqref{eq:nbhd}. If \(r(u)\le1\), the ray does not meet \(L\), and \(C_u=L\). If \(r(u)>1\), then \(1\in L\); choose \(d'>0\) with \(D(1,d')\subset L\). The slit disc \(D(1,d')\setminus[1,1+d')\) is connected and contained in \(C_u\). Every \(a\in C_u\) with \(\abs{a-1}\ge d'\) is joined to it inside \(C_u\) by the segment from \(a\) towards \(1\): this segment lies in \(L\) by convexity, and it meets \([1,\infty)\) only if \(a\in[1,\infty)\).
+
+Hence \(C_u=N_u^{+}\) or \(C_u=N_u^{-}\). The point \(z_\ast=1-\delta/2\) lies in \(C_u\) for every \(u\in D(1,\varepsilon_1)\), by \eqref{eq:nbhd}. The sets \(U^{\pm}=\{u\in D(1,\varepsilon_1)\mid\hat y(z_\ast,u)=V(\pm\sqrt{\delta/2},u)\}\) are closed, disjoint, and cover the connected set \(D(1,\varepsilon_1)\). Finally \(1\in U^{-}\): at \(u=1\) the point \((\rho z_\ast,y(\rho z_\ast,1),1)\in\cN\) is real with \(y(\rho z_\ast,1)<\tau\), so \(w<0\) by Lemma~\ref{lem:local}(4). Therefore \(U^{-}=D(1,\varepsilon_1)\), and \(C_u=N_u^{-}\) for all \(u\). This proves Claim~1.
+
+\emph{Step 2 (the rest of the circle).} Let \(\cA=\{z_0\mid\abs{z_0}=1,\ \abs{z_0-1}\ge\delta/2\}\), a compact arc. Fix \(z_0\in\cA\) and put \(y_0=y(\rho z_0,1)\). The function \(\hat\Phi(z,y,u)=F(\rho(u)z,y,u)-y\) is analytic near \((z_0,y_0,1)\), because \((\rho z_0,1)\in\Omega\). It vanishes there by Step~0, and \(\hat\Phi_y(z_0,y_0,1)=F_y(\rho z_0,y_0,1)-1\ne0\) by (H3). By the implicit function theorem there are \(r_{z_0},\varepsilon_{z_0},s_{z_0}>0\) and an analytic map \(\hat Y_{z_0}\colon D(z_0,r_{z_0})\times D(1,\varepsilon_{z_0})\to D(y_0,s_{z_0})\) which is the unique solution of \(\hat\Phi=0\) with values in \(D(y_0,s_{z_0})\). Shrinking \(r_{z_0}\) and \(\varepsilon_{z_0}\) keeps this uniqueness, so we may assume:
+\begin{itemize}
+\item[(i)] \(r_{z_0}\le\delta/4\); then \(D(z_0,r_{z_0})\cap[1,\infty)=\emptyset\), since the distance from \(z_0\) to \([1,\infty)\) is \(\abs{z_0-1}\ge\delta/2\);
+\item[(ii)] \(\abs{\hat y(z,u)-y_0}<s_{z_0}\) and \((\rho(u)z,u)\in\Omega\) for all \((z,u)\in\cK\) with \(\abs{z-z_0}<r_{z_0}\) and \(\abs{u-1}<\varepsilon_{z_0}\). This uses the continuity of \(\hat y\) on \(\cK\) at \((z_0,1)\).
+\end{itemize}
+
+\emph{Claim 2.} If \(\abs{u-1}<\varepsilon_{z_0}\), \(z\in D(z_0,r_{z_0})\) and \(\abs{z}<r(u)\), then \(\hat y(z,u)=\hat Y_{z_0}(z,u)\). Indeed, \(\hat\Phi(z,\hat y(z,u),u)=0\) by (H1), and \(\hat y(z,u)\in D(y_0,s_{z_0})\) by (ii). Uniqueness gives the claim.
+
+By compactness choose \(z_1,\dots,z_m\in\cA\) with \(\cA\subset\bigcup_jD(z_j,r_j/2)\), where \(r_j=r_{z_j}\). Write \(\hat Y_j\), \(\varepsilon_j\) and \(s_j\) accordingly, \(D_j=D(z_j,r_j)\), and \(D^{\times}=D(1,\delta)\setminus[1,1+\delta)\).
+
+\emph{Step 3 (witness points, and the choice of \(\varepsilon\) and \(\eta\)).} Let \(c,c'\) be distinct points of the unit circle with \(D(c,a)\cap D(c',a')\ne\emptyset\). Then this intersection is convex, and it contains the point of the open chord \((c,c')\) at distance \(a\abs{c-c'}/(a+a')\) from \(c\), which has modulus less than \(1\). So for every pair \(i\ne j\) with \(D_i\cap D_j\ne\emptyset\) there is a disc \(D(c_{ij},d_{ij})\subset D_i\cap D_j\cap D(0,1-d_{ij})\). Likewise, for every \(j\) with \(D_j\cap D(1,\delta)\ne\emptyset\) there is a disc \(D(c_j,d_j)\subset D_j\cap D(1,\delta)\cap D(0,1-d_j)\). Let \(d>0\) be the minimum of all the \(d_{ij}\) and \(d_j\). Put
+\[
+\eta=\min\bigl(\delta/4,\ \min_jr_j/2\bigr),
+\]
+and choose \(\varepsilon\) with \(0<\varepsilon\le\min(\varepsilon_1,\varepsilon_{z_1},\dots,\varepsilon_{z_m})\) such that \(r(u)>1-\min(\eta,d)\) for \(\abs{u-1}<\varepsilon\). This is possible because \(r\) is continuous with \(r(1)=1\).
+
+\emph{Step 4 (covering).} Let \(\abs{u-1}<\varepsilon\). We claim that \(\DD_\eta\subset D(0,r(u))\cup\bigcup_jD_j\cup D^{\times}\). Let \(z\in\DD_\eta\). If \(\abs{z-1}<\delta\), then \(z\in D^{\times}\). If \(\abs{z}<r(u)\), there is nothing to prove. Otherwise \(1-\eta<r(u)\le\abs{z}<1+\eta\) and \(\abs{z-1}\ge\delta\). Then \(z'=z/\abs{z}\) satisfies \(\abs{z-z'}<\eta\) and \(\abs{z'-1}>\delta-\eta\ge\delta/2\). So \(z'\in\cA\), hence \(z'\in D(z_j,r_j/2)\) for some \(j\), and \(\abs{z-z_j}<r_j/2+\eta\le r_j\).
+
+\emph{Step 5 (consistency).} Fix \(u\in D(1,\varepsilon)\). We have three kinds of analytic functions: \(\hat y(\cdot,u)\) on \(D(0,r(u))\), \(\hat Y_j(\cdot,u)\) on \(D_j\), and \(V(-\sqrt{1-z},u)\) on \(D^{\times}\). They agree on all pairwise intersections:
+\begin{itemize}
+\item on \(D(0,r(u))\cap D_j\), by Claim~2;
+\item on \(D(0,r(u))\cap D^{\times}\), by Claim~1;
+\item on \(D_i\cap D_j\ne\emptyset\): on the disc \(D(c_{ij},d_{ij})\subset D(0,r(u))\) both functions equal \(\hat y(\cdot,u)\) by Claim~2, and \(D_i\cap D_j\) is convex, so the identity theorem applies;
+\item on \(D_j\cap D^{\times}\), which equals \(D_j\cap D(1,\delta)\) by (i): if it is non-empty, then on \(D(c_j,d_j)\subset D(0,r(u))\) both functions equal \(\hat y(\cdot,u)\) by Claims~1 and~2 (the disc \(D(c_j,d_j)\) avoids \([1,\infty)\) by (i)), and the set is convex, so the identity theorem applies.
+\end{itemize}
+Hence the three families of functions glue to one function on \(D(0,r(u))\cup\bigcup_jD_j\cup D^{\times}\supset\DD_\eta\), still denoted \(\hat y(z,u)\). It is jointly analytic in \((z,u)\). Indeed, the sets \(\{(z,u)\mid\abs{z}<r(u)\}\), \(D_j\times D(1,\varepsilon)\) and \(D^{\times}\times D(1,\varepsilon)\) are open in \(\CC^2\), and on each of them the glued function is one jointly analytic function. It is bounded by \(\max(\tau,\max_j(\tau+s_j),\sup\abs{V})\). This proves (c) and (d), with \(V\) restricted to \(D(0,\sqrt\delta)\times D(1,\varepsilon)\); note that \(\sqrt\delta<r_V\).
+\end{proof}
+
+\begin{remark}[comparison with Drmota's theorems]\label{rem:drmota}
+Drmota \cite[Thm.~2.21]{Dr} assumes \(F(0,y,u)\equiv0\), \(F(x,0,u)\not\equiv0\), non-negative coefficients of \(F(x,y,1)\), and a solution \((x_0,y_0)\) of \(y=F\), \(F_y=1\) at \(u=1\) inside the region of convergence, with \(F_x\ne0\) and \(F_{yy}\ne0\). Its proof is that of \cite[Thm.~2.19]{Dr} with an additional analytic parameter \(u\). For the tree equation \eqref{eq:F} the assumption \(F(0,y,u)\equiv0\) fails, since \(F(0,y,u)=\sum_{r\ge3}w_r(u)y^r/r!\). Theorem~\ref{thm:unif} differs as follows.
+\begin{itemize}
+\item In the proof of \cite[Thm.~2.19]{Dr}, the assumption \(F(0,y)=0\) is used to construct the solution by contraction. In Theorem~\ref{thm:unif} the solution is given and (H1) is assumed. For the tree equation the solution is defined by the recursion \eqref{eq:tree}, and (H1) is Lemma~\ref{lem:funeq}.
+\item Drmota uses the non-negativity of the coefficients of \(F\) to show that the radius of convergence solves the characteristic system and that \(F_y\ne1\) elsewhere on the circle. Here these two facts are the hypotheses (H2) and (H3). For the tree equation they are proved in Section~\ref{sec:char} (Proposition~\ref{prop:char} and Lemma~\ref{lem:circle}), by an argument that does not use \(F(0,y,1)=0\).
+\item The uniformity in complex \(u\) and the continuation to a fixed slit disc, which \cite{Dr} does not write out, are Steps~1--5 above. They use the non-negativity and the degree bound of the \(y_n(u)\), through the continuity of \(y\) on \(\overline{G_0}\).
+\end{itemize}
+\end{remark}
+
+\begin{corollary}[the tree equation]\label{cor:tree}
+Theorem~\ref{thm:unif} applies to \(y=T\), to \(F\) of \eqref{eq:F} and to \(\Omega\) of Section~\ref{sec:tree}, with \(\rho,\tau\) of Proposition~\ref{prop:char}. Moreover \(\varepsilon,\eta,\delta\) can be chosen so that \(\varepsilon<\frac12\) and
+\begin{equation}\label{eq:cOmega}
+c_\Omega:=\sup_{\abs{u-1}<\varepsilon}\abs{\rho(u)}\bigl(1+\max(\eta,\delta)\bigr)\max(1,\abs{u})<\tfrac12 .
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+We check the hypotheses of Theorem~\ref{thm:unif}. \(T_n\in\RR_{\ge0}[u]\) with \(\deg T_n\le n\): Lemma~\ref{lem:pos}(1). \(\rho\in(0,\infty)\), \(\tau<\infty\) and \(\{(x,1)\mid\abs{x}\le\rho\}\subset\Omega\): Proposition~\ref{prop:char}(1),(2). (H1): Lemma~\ref{lem:funeq}, since \(G_0=G_T\). (H2): Proposition~\ref{prop:char}(3),(5). (H3): Lemma~\ref{lem:circle}. For \eqref{eq:cOmega}, shrink \(\varepsilon,\eta,\delta\), using \(\rho\le\frac9{20}\) and the continuity of \(\rho(u)\); conclusions (c) and (d) persist under shrinking.
+\end{proof}
+
+\section{The three families near the singularity}\label{sec:families}
+
+This section transfers the square-root singularity of \(T\) to the three series \(Q\), \(\psibar\) and \(\pp\). The first two have a square-root singularity. For \(\pp\) the square-root term cancels identically, and the leading singular term has exponent \(\frac32\). The main point is that all the leading coefficients are non-zero near \(u=1\).
+
+Fix \(\varepsilon,\eta,\delta\), \(\rho(u)\), \(\tau(u)\) and \(V\) as in Corollary~\ref{cor:tree}, put \(\hat T(z,u)=T(\rho(u)z,u)\), and write \(U=D(1,\varepsilon)\). We also take \(\delta\le1\). By \eqref{eq:cOmega}, the point \((\rho(u)z,u)\) stays in the compact subset \(\Omega_c=\{(x,u)\mid\theta(x,u)\le c_\Omega,\ \abs{u}\le\frac32\}\) of \(\Omega\) for \(z\in\DD_\eta\) and \(u\in U\). So does \((\rho(u)(1-w^2),u)\) for \(\abs{w}<\sqrt\delta\).
+
+\begin{definition}\label{def:fam}
+On \(\DD_\eta\times U\) define
+\begin{align*}
+\hat Q&=\exp\bigl(\hat T+\Lambda_1(\rho(u)z,u)\bigr),\qquad
+\hat\psi=\hat Q\bigl(u^2(\hat Q-1)-u(u-1)\rho(u)z+1\bigr),\\
+\hat\pp&=\frac{1}{1+u}\Bigl((1+u+u\rho(u)z)\hat Q-\frac u2\bigl(\hat Q^2-Q^{[2]}(\rho(u)z,u)\bigr)\Bigr).
+\end{align*}
+On \(D(0,\sqrt\delta)\times U\), with \(x=\rho(u)(1-w^2)\), define
+\begin{align*}
+\cQ(w,u)&=\exp\bigl(V(w,u)+\Lambda_1(x,u)\bigr),\qquad
+\Psi(w,u)=\cQ\bigl(u^2(\cQ-1)-u(u-1)x+1\bigr),\\
+\fP(w,u)&=\frac{1}{1+u}\Bigl((1+u+ux)\cQ-\frac u2\bigl(\cQ^2-Q^{[2]}(x,u)\bigr)\Bigr).
+\end{align*}
+Write \(\cQ(w,u)=\sum_{j\ge0}q_j(u)w^j\).
+\end{definition}
+
+\begin{proposition}\label{prop:fam}
+\begin{enumerate}
+\item \(\hat Q\), \(\hat\psi\) and \(\hat\pp\) are analytic and bounded on \(\DD_\eta\times U\), and \(\cQ\), \(\Psi\) and \(\fP\) are analytic and bounded on \(D(0,\sqrt\delta)\times U\).
+\item For \(u\in U\) and \(n\ge0\): \([z^n]\hat Q(z,u)=\rho(u)^nQ_n(u)\), \([z^n]\hat\psi(z,u)=\rho(u)^n\psibar_n(u)\) and \([z^n]\hat\pp(z,u)=\rho(u)^n\pp_n(u)\).
+\item For \(u\in U\), \(z\in\DD_\eta\) with \(\abs{1-z}<\delta\), and \(w=-\sqrt{1-z}\): \(\hat Q(z,u)=\cQ(w,u)\), \(\hat\psi(z,u)=\Psi(w,u)\) and \(\hat\pp(z,u)=\fP(w,u)\).
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(1) \(\hat T\) and \(V\) are bounded by Theorem~\ref{thm:unif}. The functions \(\Lambda_1\) and \(Q^{[2]}\) are analytic on \(\Omega\) and bounded on \(\Omega_c\), by Lemma~\ref{lem:domain}: \(\abs{\Lambda_1}\le\frac43\sum_kc_\Omega^k/k\) and \(\abs{Q^{[2]}}\le\exp(\frac43\sum_kc_\Omega^{2k}/k)\). Also \(\abs{1+u}>1\) on \(U\).
+
+(2) For \(\abs{z}<r(u)\) we have \((\rho(u)z,u)\in G_0\cap\Omega\) and \(\hat T(z,u)=T(\rho(u)z,u)\). By \eqref{eq:funeq}, \(\hat Q(z,u)=Q(\rho(u)z,u)\), which is a convergent power series in \(z\) with coefficients \(\rho(u)^nQ_n(u)\). The identities \eqref{eq:Qpdef} hold between these convergent series, which gives the other two statements.
+
+(3) This follows from Theorem~\ref{thm:unif}(d) and \(\rho(u)(1-w^2)=\rho(u)z\).
+\end{proof}
+
+\begin{lemma}[value on the singular curve]\label{lem:q0}
+For all \(u\in U\), \(q_0(u)=\exp(\tau(u)+\Lambda_1(\rho(u),u))\) and \(uq_0(u)=1+u+u\rho(u)\).
+\end{lemma}
+
+\begin{proof}
+We have \(q_0(u)=\cQ(0,u)\) and \(V(0,u)=\tau(u)\), so \(q_0(u)=E_1(\rho(u),\tau(u),u)\). Let \(u\in U\) with \(u\ne1\). By \eqref{eq:charsys} and \eqref{eq:Fclosed}, the equation \(F_y=1\) gives \(E_u=uE_1\) at \((\rho(u),\tau(u),u)\). Then \(F=y\) gives
+\[
+0=x+\frac{1+u}{u}+\frac{uE_1-u^2E_1}{u(u-1)}=x+\frac{1+u}{u}-E_1
+\]
+at \(x=\rho(u)\). So \(uE_1=1+u+u\rho(u)\). The case \(u=1\) follows by continuity, and it agrees with Proposition~\ref{prop:char}(3).
+\end{proof}
+
+\begin{lemma}[odd coefficients in \(w\)]\label{lem:odd}
+For \(u\in U\),
+\[
+[w^1]\cQ=q_1,\quad[w^1]\Psi=(1+u)(1+u+u\rho(u))q_1,\quad[w^1]\fP=0,\quad[w^3]\fP=-\frac{u}{1+u}q_1\bigl(\rho(u)+q_2\bigr).
+\]
+\end{lemma}
+
+\begin{proof}
+We have \(x=\rho(u)-\rho(u)w^2\), and \(Q^{[2]}(x,u)\) is even in \(w\).
+
+For \(\Psi\): write \(\Psi=u^2\cQ^2+\cQ M\) with \(M=1-u^2-u(u-1)\rho(u)+u(u-1)\rho(u)w^2\). Then \([w^1]\Psi=q_1(2u^2q_0+1-u^2-u(u-1)\rho(u))\). By Lemma~\ref{lem:q0}, \(2u^2q_0=2u(1+u+u\rho(u))\), and the bracket equals \((1+u)^2+u(1+u)\rho(u)\).
+
+For \(\fP\): put \(a=1+u+u\rho(u)\) and \(b=u\rho(u)\). Then \((1+u)\fP=(a-bw^2)\cQ-\frac u2\cQ^2+(\text{an even function of }w)\). The coefficient of \(w\) is \(aq_1-uq_0q_1=q_1(a-uq_0)\), which vanishes by Lemma~\ref{lem:q0}. The coefficient of \(w^3\) is \(aq_3-bq_1-u(q_0q_3+q_1q_2)=q_3(a-uq_0)-q_1(b+uq_2)=-uq_1(\rho(u)+q_2)\).
+\end{proof}
+
+\begin{lemma}[values at \(u=1\)]\label{lem:u1}
+Let \(F_x=F_x(\rho,\tau,1)=1+(2+\rho)D(\rho)\ge1\) (Proposition~\ref{prop:char}(5)). Then
+\[
+q_1(1)=\sqrt{2\rho(2+\rho)F_x}>0,\qquad\rho+q_2(1)=\tfrac43\rho F_x>0 .
+\]
+\end{lemma}
+
+\begin{proof}
+Let \(u=1\) and \(x=\rho(1-w^2)\), and write \(\ell(w)=V(w,1)+R(x)=\ell_0+\ell_1w+\ell_2w^2+\ell_3w^3+\cdots\). Then \(\cQ(w,1)=e^{\ell(w)}\), so \(q_0=e^{\ell_0}=2+\rho\), \(q_1=q_0\ell_1\) and \(q_2=q_0(\ell_2+\ell_1^2/2)\). Since \(R(x)\) is even in \(w\), Theorem~\ref{thm:unif}(b) and Proposition~\ref{prop:char}(5) give \(\ell_1=V_w(0,1)=\sqrt{2\rho F_x/F_{yy}}=\sqrt{2\rho F_x/(2+\rho)}\). This gives \(q_1(1)\).
+
+For \(w\in(-\sqrt\delta,0)\) the number \(V(w,1)=T(x,1)\) satisfies \(T=F(x,T,1)\). By \eqref{eq:Fu1} this reads \(e^{\ell}(2-\ell-\tilde D(x))=2+x\), with \(\tilde D=R_2-R\). Both sides are analytic in \(w\), so the identity holds for all \(\abs{w}<\sqrt\delta\). Now \(\tilde D(x)=\tilde D(\rho)-\rho D(\rho)w^2+O(w^4)\) and \(2-\ell_0-\tilde D(\rho)=2-\tau-R_2(\rho)=1\). Hence
+\begin{align*}
+2-\ell-\tilde D(x)&=1-\ell_1w-(\ell_2-\rho D)w^2-\ell_3w^3+O(w^4),\\
+e^{\ell-\ell_0}&=1+\ell_1w+\bigl(\ell_2+\tfrac{\ell_1^2}{2}\bigr)w^2+\bigl(\ell_3+\ell_1\ell_2+\tfrac{\ell_1^3}{6}\bigr)w^3+O(w^4).
+\end{align*}
+The product has \(w^2\)-coefficient \(\rho D-\ell_1^2/2\) and \(w^3\)-coefficient \(\rho D\ell_1-\ell_1\ell_2-\ell_1^3/3\). We compare with \((2+x)/q_0=1-\rho w^2/q_0\). The \(w^2\)-coefficient gives \(\ell_1^2=2\rho(1+q_0D)/q_0=2\rho F_x/q_0\), consistent with the value of \(\ell_1\) above. The \(w^3\)-coefficient gives \(\ell_2=\rho D-\ell_1^2/3\), since \(\ell_1\ne0\). Therefore \(q_2=q_0(\rho D+\ell_1^2/6)=\rho q_0D+\rho F_x/3\), and \(\rho+q_2=\rho(1+q_0D)+\rho F_x/3=\frac43\rho F_x\).
+\end{proof}
+
+\begin{corollary}[non-vanishing amplitudes]\label{cor:amp}
+After shrinking \(\varepsilon\), there is \(c_0>0\) such that for all \(u\in U\) we have \(\abs{[w^1]\cQ}\ge c_0\), \(\abs{[w^1]\Psi}\ge c_0\) and \(\abs{[w^3]\fP}\ge c_0\), while \([w^1]\fP\equiv0\).
+\end{corollary}
+
+\begin{proof}
+At \(u=1\) the three numbers are \(q_1(1)\), \(2(2+\rho)q_1(1)\) and \(-\frac12q_1(1)\cdot\frac43\rho F_x\), by Lemma~\ref{lem:odd}. They are non-zero by Lemma~\ref{lem:u1}. They are analytic in \(u\), so they stay away from \(0\) near \(u=1\). The last statement is Lemma~\ref{lem:odd}.
+\end{proof}
+
+\section{Coefficient asymptotics, uniformly in \texorpdfstring{\(u\)}{u}}\label{sec:asym}
+
+This section turns the local form of Section~\ref{sec:families} into asymptotics for the coefficients, with error bounds uniform in \(u\). It is the transfer method of Flajolet and Odlyzko \cite{FO}, \cite[Ch.~VI]{FS}, with explicit constants.
+
+\begin{lemma}[uniform transfer bound]\label{lem:transfer}
+Let \(\eta>0\), \(\beta\ge0\) and \(K\ge0\), and let \(g\) be analytic on \(\DD_\eta\) with \(\abs{g(z)}\le K\abs{1-z}^\beta\) for all \(z\in\DD_\eta\). Then for all \(n\ge n_0(\beta,\eta):=\max(\beta+2,\ 2/\eta+1)\) we have \(\abs{[z^n]g}\le C(\beta,\eta)Kn^{-\beta-1}\), where
+\begin{multline*}
+C(\beta,\eta)=e^3+\frac1\pi\int_0^\infty s^\beta\Bigl(1+\frac{s}{\sqrt2(\beta+2)}\Bigr)^{-\beta-2}\dd s\\
++(2+\eta)^\beta\sup_{n\ge1}n^{\beta+1}(1+\eta/2)^{-n} .
+\end{multline*}
+\end{lemma}
+
+\begin{proof}
+Let \(R=1+\eta/2\) and \(n\ge n_0\), so that \(1+1/n<R\). Let \(\gamma\) be the closed contour in \(\DD_\eta\) made of four pieces: \(\gamma_1\), the arc \(z=1+e^{it}/n\) with \(\frac\pi4\le t\le\frac{7\pi}4\); \(\gamma_2\) and \(\gamma_3\), the segments \(z=1+te^{\pm i\pi/4}\) with \(\frac1n\le t\le t_\ast\), where \(\abs{1+t_\ast e^{i\pi/4}}=R\); and \(\gamma_4\), the arc of the circle \(\abs{z}=R\) joining their endpoints through \(-R\). The contour \(\gamma\) winds once around \(0\), and \(\DD_\eta\) is star-shaped with respect to \(0\). So \([z^n]g=\frac1{2\pi i}\int_\gamma g(z)z^{-n-1}\,\dd z\).
+
+On \(\gamma_1\): \(\abs{g}\le Kn^{-\beta}\), \(\abs{z}^{-n-1}\le(1-\frac1n)^{-n-1}\le e^{(n+1)/(n-1)}\le e^3\), and the length is at most \(2\pi/n\). So the contribution is at most \(e^3Kn^{-\beta-1}\).
+
+On \(\gamma_2\) and \(\gamma_3\): \(\abs{z}\ge\re z=1+t/\sqrt2\) and \(\abs{g}\le Kt^\beta\). With \(t=s/n\), each contributes at most
+\[
+\frac{K}{2\pi}\,n^{-\beta-1}\int_1^\infty s^\beta\Bigl(1+\frac{s}{\sqrt2\,n}\Bigr)^{-n-1}\dd s .
+\]
+Moreover \((1+\frac an)^{-n}\le(1+\frac a{\beta+2})^{-\beta-2}\) for \(n\ge\beta+2\).
+
+On \(\gamma_4\): \(\abs{g}\le K(2+\eta)^\beta\), \(\abs{z}^{-n-1}=R^{-n-1}\), and the length is at most \(2\pi R\). So the contribution is at most \(K(2+\eta)^\beta R^{-n}\).
+\end{proof}
+
+\begin{lemma}[binomial coefficients]\label{lem:binom}
+For \(\alpha\notin\ZZ\) let \(b_n^{(\alpha)}=[z^n](1-z)^\alpha=\prod_{j=1}^n\frac{j-1-\alpha}{j}\). Then, for \(n\ge2\),
+\[
+b_n^{(\alpha+1)}=-\frac{\alpha+1}{n-1-\alpha}b_n^{(\alpha)},\qquad\abs{b_n^{(1/2)}}\ge\frac1{4n^{3/2}},\qquad\abs{b_n^{(3/2)}}\ge\frac3{8n^{5/2}}.
+\]
+\end{lemma}
+
+\begin{proof}
+The ratio \(b_n^{(\alpha+1)}/b_n^{(\alpha)}=\prod_{j=1}^n\frac{j-2-\alpha}{j-1-\alpha}\) telescopes to \(\frac{-1-\alpha}{n-1-\alpha}\). Next, \(b_n^{(1/2)}=-c_n/(2n-1)\) with \(c_n=\binom{2n}{n}4^{-n}\). We have \(c_n\ge1/(2\sqrt n)\) by induction: \(c_1=\frac12\), and \(c_{n+1}/c_n=\frac{2n+1}{2n+2}\ge\sqrt{n/(n+1)}\) because \((2n+1)^2\ge4n(n+1)\). The last bound follows from the first identity with \(\alpha=\frac12\).
+\end{proof}
+
+\begin{proposition}[singular expansion gives uniform coefficient asymptotics]\label{prop:asym}
+Let \(U\) be a set, \(\eta>0\), \(0<r\le1\), \(M<\infty\) and \(m\in\{1,3\}\). Let \(f\colon\DD_\eta\times U\to\CC\) and \(\cP\colon D(0,r)\times U\to\CC\) be analytic in the first variable, with \(\abs{f}\le M\), \(\abs{\cP}\le M\) and
+\[
+f(z,u)=\cP(-\sqrt{1-z},u)\qquad(z\in\DD_\eta,\ \abs{1-z}<r^2).
+\]
+Write \(\cP(w,u)=\sum_j\pi_j(u)w^j\). Assume that \(\pi_j\equiv0\) for odd \(j<m\) and that \(c_0:=\inf_U\abs{\pi_m}>0\). Then there are \(n_1\) and \(C_1\), depending only on \((\eta,r,M,c_0)\), such that for all \(n\ge n_1\) and \(u\in U\),
+\[
+[z^n]f(z,u)=-\pi_m(u)\,b_n^{(m/2)}\bigl(1+\epsilon_n(u)\bigr),\qquad\abs{\epsilon_n(u)}\le\frac{C_1}{n}.
+\]
+\end{proposition}
+
+\begin{proof}
+By Cauchy's estimates, \(\abs{\pi_j(u)}\le Mr^{-j}\). Let \(J=m+3\), which is even, and put
+\[
+g(z,u)=f(z,u)-\sum_{j=0}^{J}(-1)^j\pi_j(u)(1-z)^{j/2}.
+\]
+For \(\abs{1-z}\le r^2/4\) and \(w=-\sqrt{1-z}\) we have
+\[
+\abs{g}=\Bigl\lvert\sum_{j>J}\pi_jw^j\Bigr\rvert\le M\sum_{j>J}(\abs{w}/r)^j\le2Mr^{-J-1}\abs{1-z}^{(J+1)/2}.
+\] For \(z\in\DD_\eta\) with \(\abs{1-z}>r^2/4\) we have
+\[
+\abs{g}\le M_1:=M+\sum_{j\le J}Mr^{-j}(2+\eta)^{j/2}\le M_1(4/r^2)^{(J+1)/2}\abs{1-z}^{(J+1)/2}.
+\]
+So \(\abs{g(z,u)}\le K\abs{1-z}^{\beta}\) on \(\DD_\eta\), with \(\beta=(m+4)/2\) and \(K=K(\eta,r,M)\). Lemma~\ref{lem:transfer} gives \(\abs{[z^n]g}\le CKn^{-(m+6)/2}\). The terms with even \(j\le J\) are polynomials in \(z\) of degree at most \(3\), so they do not contribute for \(n\ge4\). The odd terms are \(j=m\) and \(j=m+2\). Hence, for \(n\ge\max(n_0,4)\) and by Lemma~\ref{lem:binom},
+\begin{align*}
+[z^n]f&=-\pi_mb_n^{(m/2)}-\pi_{m+2}b_n^{((m+2)/2)}+[z^n]g\\
+&=-\pi_mb_n^{(m/2)}\Bigl(1-\frac{\pi_{m+2}}{\pi_m}\cdot\frac{(m+2)/2}{n-1-m/2}-\frac{[z^n]g}{\pi_mb_n^{(m/2)}}\Bigr).
+\end{align*}
+The second term in the bracket is \(O(1/n)\), because \(\abs{\pi_{m+2}/\pi_m}\le Mr^{-m-2}/c_0\). The third is \(O(n^{-2})\), because \(\abs{b_n^{(m/2)}}\ge\frac14n^{-m/2-1}\) by Lemma~\ref{lem:binom}.
+\end{proof}
+
+\begin{corollary}[quasi-power form]\label{cor:qp}
+Let \((P_n)\) be one of \((Q_n)\), \((\psibar_n)\), \((\pp_n)\), and let correspondingly \((m,\pi)\) be \((1,[w^1]\cQ)\), \((1,[w^1]\Psi)\) or \((3,[w^3]\fP)\). Then there are \(\varepsilon'>0\), \(n_2\) and \(C_2\) such that, for \(n\ge n_2\) and \(\abs{u-1}\le\varepsilon'\),
+\[
+\frac{P_n(u)}{P_n(1)}=A(u)B(u)^n\bigl(1+\tilde\epsilon_n(u)\bigr),\qquad A(u)=\frac{\pi(u)}{\pi(1)},\quad B(u)=\frac{\rho(1)}{\rho(u)},\quad\abs{\tilde\epsilon_n(u)}\le\frac{C_2}{n}.
+\]
+The functions \(A\) and \(B\) are analytic on \(D(1,\varepsilon)\), \(A(1)=B(1)=1\), and \(B\) is the same function for the three families.
+\end{corollary}
+
+\begin{proof}
+Apply Proposition~\ref{prop:asym} with \(U=\{\abs{u-1}\le\varepsilon'\}\), \(r=\sqrt\delta\), and \((f,\cP)=(\hat Q,\cQ)\), \((\hat\psi,\Psi)\) or \((\hat\pp,\fP)\). Its hypotheses are Proposition~\ref{prop:fam} and Corollary~\ref{cor:amp}. By Proposition~\ref{prop:fam}(2), \(P_n(u)=\rho(u)^{-n}[z^n]f(z,u)=-\pi(u)\rho(u)^{-n}b_n^{(m/2)}(1+\epsilon_n(u))\). Divide by the same formula at \(u=1\).
+\end{proof}
+
+\section{Proof of the main theorem}\label{sec:proof}
+
+We first quote the quasi-powers theorem and compute the rate explicitly. Then we prove Theorem~\ref{thm:main}: Corollary~\ref{cor:qp} puts each normalized Poincar\'e polynomial in the form that the quasi-powers theorem needs, and it remains to show that the common rate \(\sigma^2\) is not zero and to compute the mean.
+
+\begin{theorem}[quasi-powers theorem; Hwang; cited]\label{thm:hwang}
+Let \(\xi_n\) be random variables with values in \(\ZZ_{\ge0}\) and probability generating functions \(p_n(u)\). Suppose that, uniformly in a fixed complex neighbourhood of \(u=1\),
+\[
+p_n(u)=A(u)B(u)^{\beta_n}\bigl(1+O(1/\kappa_n)\bigr),
+\]
+with \(\beta_n,\kappa_n\to\infty\), \(A\) and \(B\) analytic at \(u=1\), \(A(1)=B(1)=1\), and \(\var(B)=B''(1)+B'(1)-B'(1)^2\ne0\). Then \(\E(\xi_n)=\beta_n\mean(B)+\mean(A)+O(\kappa_n^{-1})\), \(\Var(\xi_n)=\beta_n\var(B)+\var(A)+O(\kappa_n^{-1})\), and the Kolmogorov distance between the law of \((\xi_n-\E(\xi_n))/\sqrt{\Var(\xi_n)}\) and \(N(0,1)\) is \(O(\kappa_n^{-1}+\beta_n^{-1/2})\).
+\end{theorem}
+
+This is \cite{Hw}; see also \cite[Thm.~IX.8]{FS}. It is the form quoted as Theorem~2.3 in \cite{CK}. A variant with the same leading terms is \cite[Thm.~2.22]{Dr}. Here \(\mean\) and \(\var\) are applied to \(A\) and \(B\) by the formulas \eqref{eq:meanvar}.
+
+\begin{lemma}[formulas for the rate]\label{lem:formulas}
+Let \(\rho(u)\) and \(\tau(u)\) be as in Corollary~\ref{cor:tree}, and \(B(u)=\rho(1)/\rho(u)\) as in Corollary~\ref{cor:qp}. Then \(\rho'(1)\) and \(\rho''(1)\) are given by \eqref{eq:rho12} below, and \(\mu:=B'(1)\) and \(\sigma^2:=B''(1)+B'(1)-B'(1)^2\) are given by \eqref{eq:musigma}. All partial derivatives of \(F\) there are taken at \((\rho,\tau,1)\).
+\end{lemma}
+
+\begin{proof}
+By \eqref{eq:charsys}, \((\rho(u),\tau(u))\) is an analytic solution of \(\Phi=0\), \(\Phi_y=0\), where \(\Phi=F-y\). The Jacobian determinant of \((\Phi,\Phi_y)\) with respect to \((x,y)\) at \((\rho,\tau,1)\) is \(F_xF_{yy}\), which is non-zero by Proposition~\ref{prop:char}(5). So this is the only analytic solution through \((\rho,\tau)\), and \(\mu\) and \(\sigma^2\) are determined by \(F\). Differentiating \(\Phi(\rho(u),\tau(u),u)=0\) and using \(\Phi_y=0\) gives \(F_x\rho'+F_u=0\). Differentiating \(\Phi_y(\rho(u),\tau(u),u)=0\) gives \(F_{xy}\rho'+F_{yy}\tau'+F_{yu}=0\). Differentiating the first relation once more, the terms \(\Phi_y\tau''\) and \(\frac{\dd}{\dd u}(\Phi_y)\,\tau'\) vanish, and we get \(F_{xx}\rho'^2+2F_{xu}\rho'+F_{uu}+(F_{xy}\rho'+F_{yu})\tau'+F_x\rho''=0\). Hence, with all partial derivatives taken at \((\rho,\tau,1)\),
+\begin{equation}\label{eq:rho12}
+\rho'(1)=-\frac{F_u}{F_x},\qquad\rho''(1)=-\frac1{F_x}\Bigl(F_{xx}\rho'(1)^2+2F_{xu}\rho'(1)+F_{uu}-\frac{(F_{xy}\rho'(1)+F_{yu})^2}{F_{yy}}\Bigr),
+\end{equation}
+\begin{equation}\label{eq:musigma}
+\mu=B'(1)=-\frac{\rho'(1)}{\rho},\qquad\sigma^2=B''(1)+B'(1)-B'(1)^2=-\frac{\rho''(1)}{\rho}+\mu+\mu^2 .
+\end{equation}
+These are the expressions of \cite[Thm.~2.23]{Dr}.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+By Theorem~\ref{thm:CKL}, the Poincar\'e polynomials of the three families are \(P_n=\pp_n\) (\(n\ge3\)), \(Q_n\) (\(n\ge2\)) and \(\psibar_n\) (\(n\ge1\)). They have non-negative integer coefficients, so \(f_n=P_n/P_n(1)\) is a probability generating function. By Corollary~\ref{cor:qp}, \(f_n(u)=A(u)B(u)^n(1+O(1/n))\) uniformly for \(\abs{u-1}\le\varepsilon'\), with \(B(u)=\rho(1)/\rho(u)\) independent of the family. So Theorem~\ref{thm:hwang} applies with \(\beta_n=\kappa_n=n\), as soon as \(\var(B)\ne0\). It gives items~(2) and~(3) with \(\sigma^2=\var(B)\) and \(c_X=\var(A)\), and also \(\mean(f_n)=\mu n+\mean(A)+O(1/n)\) with \(\mu=\mean(B)\). Lemma~\ref{lem:formulas} expresses \(\mu\) and \(\sigma^2\) explicitly. It remains to show that \(\sigma^2>0\) and to prove item~(1).
+
+\emph{Positivity.} The right-hand sides of \eqref{eq:rho12} and \eqref{eq:musigma} are explicit numbers, determined by the point \((\rho,\tau)\) of Proposition~\ref{prop:char} and by derivatives of the closed form \eqref{eq:Fclosed}. The certified computation of Section~\ref{sec:computer} evaluates them in rigorous interval arithmetic and shows
+\begin{equation}\label{eq:pos}
+\sigma^2>0 .
+\end{equation}
+That computation uses only Lemma~\ref{lem:pos}, Lemma~\ref{lem:domain}, Lemma~\ref{lem:F}, Proposition~\ref{prop:char}, the characteristic system \eqref{eq:charsys} of Corollary~\ref{cor:tree}, Lemma~\ref{lem:formulas} and the computation in the proof of Lemma~\ref{lem:q0}. All of these are proved above without Theorem~\ref{thm:main}. The computation does not use Theorem~\ref{thm:main} or any consequence of it. This is the only step of the proof that is verified by computer.
+
+\emph{The mean.} Let \(X\) be a smooth projective variety of complex dimension \(d\) with an action of a finite group \(G\). The Poincar\'e pairing \(H^{2k}(X;\QQ)\times H^{2d-2k}(X;\QQ)\to\QQ\) is perfect and \(G\)-invariant. Its restriction to the invariant subspaces is still perfect. Indeed, if \(a\) is invariant and pairs to zero with all invariant classes, then for every class \(c\) we have \(\langle a,c\rangle=\langle a,\frac1{\abs{G}}\sum_{g\in G}gc\rangle=0\). So \(\dim H^{2k}(X;\QQ)^G=\dim H^{2d-2k}(X;\QQ)^G\). Applied to the three families, this shows that \(P_n\) is palindromic of degree \(d_n\), so that \(f_n(u)=u^{d_n}f_n(1/u)\). Differentiating at \(u=1\) gives \(\mean(f_n)=d_n-\mean(f_n)\), that is, \(\mean(f_n)=d_n/2\). This is item~(1). Comparing with \(\mean(f_n)=\mu n+O(1)\) also gives \(\mu=\frac12\).
+\end{proof}
+
+\begin{remark*}[why the rate is the same]
+The three generating functions are \(Q=\exp(T+\Lambda_1)\) and polynomials in \(Q\), \(Q^{[2]}\), \(x\) and \(u\), by \eqref{eq:Qpdef}. The P\'olya terms \(\Lambda_1\) and \(Q^{[2]}\) are analytic on \(\Omega\), which contains the closed discs \(\abs{x}\le\abs{\rho(u)}(1+\eta)\) for \(u\) near~\(1\). So the three functions have the same singular curve \(x=\rho(u)\) as \(T\). Their singular parts have non-vanishing leading coefficients near \(u=1\) (Corollary~\ref{cor:amp}), with exponent \(\frac12\) for \(Q\) and \(\psibar\) and exponent \(\frac32\) for \(\pp\). In the quotient \(P_n(u)/P_n(1)\) the power of \(n\) cancels, and the factor \(B(u)^n\) is common. The family enters only through \(A(u)\), that is, through the constant terms \(\mean(A)\) and \(\var(A)\). This replaces the conditional argument of \cite[Appendix]{CK}: its two assumptions, a square-root singularity and a non-zero leading coefficient, are provided by Theorem~\ref{thm:unif} and by \(q_1(1)\ne0\) (Lemma~\ref{lem:u1}).
+\end{remark*}
+
+\section{Computer verification}\label{sec:computer}
+
+This section describes the one computational step of the proof, the inequality \eqref{eq:pos}. It says what is computed, which earlier results the computation uses, how the two programs differ, and where the archived output is.
+
+\subsection{What is certified}
+
+The two programs evaluate the right-hand sides of \eqref{eq:rho12} and \eqref{eq:musigma} in rigorous interval arithmetic and check that the lower end of the enclosure of \(\sigma^2\) is positive. They use only facts proved by hand earlier in this paper: Sections~\ref{sec:tree} and~\ref{sec:char}, the characteristic system \eqref{eq:charsys}, Lemma~\ref{lem:formulas}, and the computation in the proof of Lemma~\ref{lem:q0}. They do not use Theorem~\ref{thm:main}.
+
+\begin{itemize}
+\item \emph{Enclosing \(\rho\).} By Proposition~\ref{prop:char}(4), \(\rho\) is the unique zero of the strictly decreasing function \(h\) in \((0,\frac12)\). A certified sign change \(h(a)>0>h(b)\) therefore gives \(\rho\in(a,b)\).
+\item \emph{Enclosing \(\tau\).} By Proposition~\ref{prop:char}(3), \(\tau=1-R_2(\rho)\). The programs also check the second relation \(\tau=\log(2+\rho)-R(\rho)\).
+\item \emph{Truncation.} The coefficients \(T_n(u)\) are computed exactly for \(n\le N\). The tail in \(n\) is bounded by \(0\le[(u-1)^j]T_n\le\binom njT_n(1)\) and \(T_n(1)\le4^n/3\) (Lemma~\ref{lem:pos}(1),(3)). The terms \(T(x^k,u^k)\) are summed for \(k\le K\). The tail in \(k\) is bounded by Lemma~\ref{lem:domain}(2), with Cauchy's estimates on a polydisc inside \(\Omega\) or with direct coefficient majorants. The second bound of Lemma~\ref{lem:domain}(2) uses \(\deg T_1=0\) and \(\deg_uT_n\le n-2\) for \(n\ge3\), not only \(\deg T_n\le n\).
+\item \emph{The removable singularity.} At \(u=1\) the quotient in \eqref{eq:Fclosed} has a removable singularity. It is evaluated by Taylor jets in \(u-1\), after dropping the order-zero part of \(E_u/u-uE_1\), which vanishes identically. The programs check that the enclosures of this part contain \(0\).
+\end{itemize}
+
+\emph{Primary program.} It uses Arb ball arithmetic (python-flint 0.7.1) at 320 bits, with \(N=160\) and \(K=120\). It encloses \(\rho\) by exact rationals \(a<b\) with certified \(h(a)>0>h(b)\). It computes Taylor jets of \(F\) at \((\rho,\tau,1)\) from the closed form \eqref{eq:Fclosed} and evaluates \eqref{eq:rho12}--\eqref{eq:musigma}. It also checks \(F(\rho,\tau,1)=\tau\), \(F_y(\rho,\tau,1)=1\) and \(F_{yy}(\rho,\tau,1)=2+\rho\) as enclosures.
+
+\emph{Cross-check program.} It uses only the Python standard library: rational intervals with denominator \(2^{320}\), explicit outward rounding, and a logarithm series with a remainder bound. It takes \(N=150\) and \(K=110\). It encloses \(\rho\) by certified bisection from \([\frac14,\frac9{20}]\). It does not use the two-variable system \eqref{eq:charsys} directly. Instead it eliminates \(\tau\), as follows. For \(u\ne1\) near \(1\), the proof of Lemma~\ref{lem:q0} gives \(E_u=uE_1\) and \(uE_1=1+u+u\rho(u)\) at \((\rho(u),\tau(u),u)\). Taking logarithms, which is legitimate by continuity from \(u=1\), where both sides are positive, gives \(\tau+\Lambda_1(\rho,u)=\log\frac{1+u+u\rho}{u}\) and \(u\tau+\Lambda_u(\rho,u)=\log(1+u+u\rho)\). Eliminating \(\tau\) gives \(G(\rho(u),u)=0\), where
+\begin{equation}\label{eq:scalar}
+G(x,u)=(u-1)\log(1+u+ux)-u\log u-u\Lambda_1(x,u)+\Lambda_u(x,u).
+\end{equation}
+Since \(G(x,1)\equiv0\), the function \(H=G/(u-1)\) is analytic, with \(H(\rho(u),u)=0\) and \(H(x,1)=-h(x)\). The program certifies \(H_x(\rho,1)>0\). So \(\rho(u)\) is the unique analytic solution through \((\rho,1)\), and \(\rho'(1)\) and \(\rho''(1)\) follow by implicit differentiation of \(H(\rho(u),u)=0\).
+
+\emph{What the two programs share.} The two programs differ in arithmetic and libraries, in the enclosure of \(\rho\), in the route from \(\rho\) to \(\sigma^2\), and in the tail bounds. They share one input: both compute \(T_n\) by the same closed-form recursion, coded separately. Write \([x^n]\Exp_s(T)=sT_n+E^\ast_{s,n}\), where \(E^\ast_{s,n}\) depends only on \(T_1,\dots,T_{n-1}\). The recursion is \(T_1=1\) and \(T_n=(E^\ast_{u,n}-u^2E^\ast_{1,n})/(u(u-1))\) for \(n\ge2\). It is equivalent to \eqref{eq:tree} for every \(n\), by the following argument. For \(r\ge3\) we have \(w_r=(u^{r-1}-u)/(u-1)\), and the same expression equals \(-(1+u)/u\), \(-1\) and \(0\) for \(r=0,1,2\). Since \(h_r[T]=O(x^r)\), the sums can be rearranged in \(\QQ(u)[[x]]\). Substituting into \eqref{eq:tree}, the term \(T\) cancels and we get \(\Exp_u(T)-u^2\Exp(T)=(1-u)(1+u+ux)\), the formal content of Lemma~\ref{lem:F}(2). Its coefficient of \(x\) gives \(T_1=1\), and its coefficient of \(x^n\), \(n\ge2\), gives the recursion. Each \(T_n\) is determined by \(T_1,\dots,T_{n-1}\), so the recursion has exactly one solution, the series \(T\) of \eqref{eq:tree}. In addition, both programs check \eqref{eq:tree} directly as polynomial identities, for \(n\le18\) (primary) and \(n\le24\) (cross-check).
+
+\emph{Comparison.} A third script checks that the two enclosures of each of \(\rho\), \(\tau\), \(\rho'(1)\), \(\rho''(1)\), \(\mu\) and \(\sigma^2\) overlap, that both enclosures of \(\mu\) contain \(\frac12\), and that the exact coefficient data \(T_n\) for \(n\le150\) are identical in the two programs (equal SHA-256 hashes).
+
+\subsection{Results}
+
+The files are in the folder \nolinkurl{cert/sigma2/} of the repository that accompanies this paper. The run of record is in \nolinkurl{cert/sigma2/out/run6_clean_11937cb/}. The programs are the files \nolinkurl{CK-1.py} (primary), \nolinkurl{CK-1_x.py} (cross-check) and \nolinkurl{compare.py}.
+
+\begin{center}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{0.17\textwidth}p{0.3\textwidth}p{0.15\textwidth}p{0.26\textwidth}}
+\toprule
+Claim & Method & Range & Output \\
+\midrule
+\(\sigma^2>0\) & Arb balls, 320 bits; jets of \(F\); \eqref{eq:rho12}--\eqref{eq:musigma} & \(N=160\), \(K=120\) & \nolinkurl{CK-1.out}: PASS, 1.2\,s \\
+\(\sigma^2>0\) & rational intervals, standard library only; scalar equation \eqref{eq:scalar} & \(N=150\), \(K=110\) & \nolinkurl{CK-1_x.out}: PASS, 4.9\,s \\
+agreement & overlap of six constants; identical \(T_n\) & \(n\le150\) & \nolinkurl{compare.out}: PASS \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The primary enclosure is \(\sigma^2\in[0.1509759127590951970019541828120\pm2.02\cdot10^{-32}]\). Its upper end, as stored by the program, is \(0.15097591275909519700195418281201221\). The cross-check enclosure is
+\[
+\sigma^2\in[0.150975912759095197001954182808,\ 0.150975912759095197001954182816].
+\]
+The comparison script prints the intersection with each end rounded down to 34 decimals. Rounding the upper end up instead gives the outward enclosure
+\[
+\sigma^2\in[0.1509759127590951970019541828119798,\ 0.1509759127590951970019541828120123].
+\]
+The same run gives \(\rho\in[0.37707300566812184001243092518969415079\pm2.78\cdot10^{-39}]\), and both enclosures of \(\mu\) contain \(\frac12\), as Theorem~\ref{thm:main}(1) requires.
+
+\subsection{How to rerun}
+
+The run of record was made on 2026-11-27 from 16:21:21 to 16:21:34~UTC, in a fresh clone of the private pipeline repository at commit \texttt{11937cb}, with Python 3.12.10 and python-flint 0.7.1 under Windows~11. It was repeated at the final check, from 17:15:26 to 17:15:34~UTC, in a fresh clone at commit \texttt{e0f9ec4}, and once more from a fresh copy of the accompanying repository's \nolinkurl{cert/} folder at 17:36~UTC. All three runs give identical enclosures; they differ only in the date, commit, provenance and timing lines. In a copy of the folder \nolinkurl{cert/sigma2/}, the command
+\begin{verbatim}
+sh run.sh
+\end{verbatim}
+runs the two programs in parallel and then the comparison. It is equivalent to
+\begin{verbatim}
+python CK-1.py --N 160 --K 120 --prec 320 \
+    --defcheck 18 --json out/CK-1.json
+python CK-1_x.py --N 150 --K 110 --M 24 \
+    --json out/CK-1_x.json
+python compare.py out/CK-1.json out/CK-1_x.json
+\end{verbatim}
+The programs are deterministic. The file \nolinkurl{REPRODUCE.md} of the repository lists the expected final lines.
+
+\emph{Run history.} Earlier runs gave the same enclosures. Between them the scripts changed only in lines that report provenance and file hashes, with one exception: in the first run, the comparison script failed one of its own checks. It required the truncated decimal \(0.15097591275909519700\) to lie inside the enclosure of \(\sigma^2\), which it does not. This was a bug in the check, not a disagreement between the programs. The check was corrected to require both enclosures to lie in \([0.15097591275909519700,\,0.15097591275909519701)\).
+
+\subsection{Corroborating checks, not used in the proof}
+
+These checks are finite or floating-point. No step of the proof depends on them.
+\begin{itemize}
+\item \emph{Generating functions.} For \(n\le72\) the three families computed from \eqref{eq:tree}--\eqref{eq:Qpdef} agree, as exact polynomials, with an independent computation from Getzler's formula \cite[Thms.~5.7, 5.9]{Ge}, and with direct enumeration for \(n\le11\). They reproduce all twelve values in Table~1 of \cite{CK} to the ten printed digits; for example, at \(n=70\) the three values \(\var(f_n)/n\) are \(0.1541260042\), \(0.1528624719\) and \(0.1591027379\). (Script \nolinkurl{scripts/rows.py}, log \nolinkurl{scripts/logs/rows_N72.log}.)
+\item \emph{Identities.} The identities \eqref{eq:Eu} and the identity at \(u=1\) in Lemma~\ref{lem:funeq} hold as power series up to \(x^{40}\), and the two rational inequalities in the proof of Lemma~\ref{lem:h} hold. (Script \nolinkurl{scripts/checks/exact/check_identities.py}.)
+\item \emph{Lemma~\ref{lem:u1}.} The primary program also computes \(q_1(1)\) and \(q_2(1)\) from the local inversion of \(\Phi\), not from the closed forms. Both \(q_1(1)^2\) and \(2\rho(2+\rho)F_x\) lie in
+\[
+[6.101096978379077338171349975193,\ 6.101096978379077338171349975194],
+\]
+and both \(\rho+q_2(1)\) and \(\frac43\rho F_x\) lie in
+\[
+[1.711095105572002214719471401354,\ 1.711095105572002214719471401355].
+\]
+This is a single implementation.
+\item \emph{Exact data to \(n=300\).} The amplitudes extrapolated from the exact totals \(P_n(1)\), \(n\le300\) (the limits of \(n^{3/2}\rho^nQ_n(1)\), \(n^{3/2}\rho^n\psibar_n(1)\) and \(n^{5/2}\rho^n\pp_n(1)\)), agree with the amplitudes predicted by Proposition~\ref{prop:asym} at \(u=1\) to relative error at most \(1.63\cdot10^{-13}\), and the variance slopes near \(n=300\) match \(\sigma^2\). (Log \nolinkurl{scripts/early-enclosures/logs/p1_numerics_N300.log}.)
+\item \emph{Earlier enclosures.} A first pair of interval computations (Arb at 240 bits; \texttt{mpmath} intervals at 70 digits, with coefficients from Getzler's formula) gave
+\[
+\sigma^2\in[0.1509759127590951970019541828\pm1.21\cdot10^{-29}].
+\]
+It is superseded by the certificate above and kept for the record in \nolinkurl{scripts/early-enclosures/}.
+\end{itemize}
+
+\section{Formal verification}\label{sec:lean}
+
+Nothing in this paper is formalized in Lean or in any other proof assistant.
+
+A formalization of the main theorem is infeasible within the budget of this project. It would need singularity analysis (transfer theorems on slit discs), the quasi-powers theorem, the analytic implicit function theorem with parameters, and the P\'olya cycle-index and plethysm machinery for power series in two variables. To our knowledge Mathlib provides none of the first two and only fragments of the others; building them would take months. The certificate would also need verified interval arithmetic for \(\exp\) and \(\log\) on about \(10^4\) operations with 300-bit numbers. In any case Theorem~\ref{thm:CKL} would stay a cited hypothesis, because Mathlib has no moduli spaces of curves.
+
+Some small pieces could be formalized at low cost: the first coefficients \(T_1,\dots,T_5\); the two rational inequalities in the proof of Lemma~\ref{lem:h}; the algebra in Lemmas~\ref{lem:q0} and~\ref{lem:odd}; and the bound \(s(\frac14)\le\frac13\) in the proof of Lemma~\ref{lem:pos}(3). None of them has been done.
+
+\section{Status, review and dependencies}\label{sec:status}
+
+\begin{center}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{0.3\textwidth}p{0.25\textwidth}p{0.32\textwidth}}
+\toprule
+Step & Justification & Status \\
+\midrule
+Theorem~\ref{thm:CKL} & cited \cite{CKL,CK} & proved in the literature (\cite{CKL} is a preprint) \\
+Theorem~\ref{thm:hwang} & cited \cite{Hw,FS} & proved in the literature \\
+Sections~\ref{sec:tree}--\ref{sec:asym}, Lemma~\ref{lem:formulas} & by hand & proved (passed AI review) \\
+Inequality \eqref{eq:pos} & computer, two programs & certified \\
+Theorem~\ref{thm:main}(1), the mean & by hand (Poincar\'e duality) & proved (passed AI review) \\
+Theorem~\ref{thm:main} & combination & proved, conditional on the cited inputs \\
+Lean & none & not formalized \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\emph{Review.} The full package (the proof, the certificate code and its archived output) was reviewed by AI referees on three Claude models: a line-by-line checker (Claude Opus), an adversarial referee that assumes the proof is wrong (Claude Fable), and, from the second round on, a third referee (Claude Sonnet). The referees reviewed a fixed commit, blind to each other and to the working notes. The proof passes a round when at least two of three referees accept with zero issues and no referee has an unresolved major issue. The rounds were as follows.
+\begin{itemize}
+\item Round~1 (commit \texttt{01b15d5}): checker minor (4 issues), adversary minor (2 issues).
+\item Round~2 (commit \texttt{a01e04d}): third referee accept (0 issues), checker minor (2 issues), adversary minor (1 issue).
+\item Round~3 (commit \texttt{cd1c38a}): all three minor (documentation issues only).
+\item Round~4 (commit \texttt{fa1b088}): third referee accept (0 issues), adversary accept (0 issues), checker minor (1 documentation issue). This is a pass.
+\end{itemize}
+No referee reported a mathematical gap or a major issue in any round. Every issue was fixed before the next round; none changed a mathematical step.
+
+\emph{External inputs and caveats.} The external inputs are Theorem~\ref{thm:CKL} and Theorem~\ref{thm:hwang}. Theorem~\ref{thm:CKL} rests on a preprint \cite{CKL} and on identity (5.10) of \cite{CK}, which that paper derives from its (5.8) in one line. An independent route through Getzler's theorem \cite{Ge} is implemented and agrees for \(n\le72\), but its derivation is not written out here. The statement of Theorem~\ref{thm:hwang} was checked against \cite[Thm.~2.3]{CK} and \cite[Thm.~2.22]{Dr}; the texts \cite{Hw} and \cite{FS} were not re-read for this paper. The constants \(c_X\) are not computed in closed form.
+
+\subsection*{Transparency note}
+
+Human-directed research produced with the help of AI tools (Claude) and checked by AI referees (Claude Opus, Claude Fable and Claude Sonnet). Additional verification may still be required.
+
+\begin{thebibliography}{99}
+
+\bibitem{BK}
+G.~B\'erczi and Y.-H.~Kiem, \emph{Real-rootedness of the Poincar\'e polynomials of \(\overline{\mathcal M}_{0,n}\): an AI-assisted proof}, preprint, 2026.
+\url{https://arxiv.org/abs/2605.29151}
+
+\bibitem{CK}
+J.~Choi and Y.-H.~Kiem, \emph{Asymptotic distribution of the Betti numbers of \(\overline{\mathcal M}_{0,n}\)}, Proc. Natl. Acad. Sci. USA \textbf{123} (2026), no.~18, e2601111123.
+\url{https://doi.org/10.1073/pnas.2601111123};
+\url{https://arxiv.org/abs/2601.08369}
+
+\bibitem{CK2}
+J.~Choi and Y.-H.~Kiem, \emph{Cohomology of moduli spaces of pointed curves}, preprint, 2026.
+\url{https://arxiv.org/abs/2608.24052}
+
+\bibitem{CK3}
+J.~Choi and Y.-H.~Kiem, \emph{Asymptotic distributions of the Betti and Hodge numbers of \(\overline{\mathcal M}_{g,n}\)}, preprint, 2026.
+\url{https://arxiv.org/abs/2610.38161}
+
+\bibitem{CKL}
+J.~Choi, Y.-H.~Kiem and D.~Lee, \emph{Recursive algorithm and log-concavity of representations on the cohomology of \(\overline{\mathcal M}_{0,n}\)}, preprint, 2024.
+\url{https://arxiv.org/abs/2408.10728}
+
+\bibitem{Dr}
+M.~Drmota, \emph{Random Trees}, Springer, Vienna, 2009.
+\url{https://doi.org/10.1007/978-3-211-75357-6}
+
+\bibitem{DG}
+M.~Drmota and B.~Gittenberger, \emph{The distribution of nodes of given degree in random trees}, J. Graph Theory \textbf{31} (1999), 227--253.
+\url{https://doi.org/10.1002/(SICI)1097-0118(199907)31:3<227::AID-JGT6>3.0.CO;2-6}
+
+\bibitem{FO}
+P.~Flajolet and A.~Odlyzko, \emph{Singularity analysis of generating functions}, SIAM J. Discrete Math. \textbf{3} (1990), 216--240.
+\url{https://doi.org/10.1137/0403019}
+
+\bibitem{FS}
+P.~Flajolet and R.~Sedgewick, \emph{Analytic Combinatorics}, Cambridge University Press, Cambridge, 2009.
+\url{https://doi.org/10.1017/CBO9780511801655}
+
+\bibitem{Ge}
+E.~Getzler, \emph{Operads and moduli spaces of genus \(0\) Riemann surfaces}, in: The Moduli Space of Curves (Texel Island, 1994), Progr. Math. \textbf{129}, Birkh\"auser, Boston, 1995, 199--230. \url{https://doi.org/10.1007/978-1-4612-4264-2_8}; arXiv:alg-geom/9411004.
+\url{https://arxiv.org/abs/alg-geom/9411004}
+
+\bibitem{Ha}
+L.~H.~Harper, \emph{Stirling behavior is asymptotically normal}, Ann. Math. Statist. \textbf{38} (1967), 410--414.
+\url{https://doi.org/10.1214/aoms/1177698956}
+
+\bibitem{Hw}
+H.-K.~Hwang, \emph{On convergence rates in the central limit theorems for combinatorial structures}, European J. Combin. \textbf{19} (1998), 329--343.
+\url{https://doi.org/10.1006/eujc.1997.0179}
+
+\end{thebibliography}
+
+\end{document}

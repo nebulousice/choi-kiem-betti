@@ -1,0 +1,11 @@
+runner: sh run.sh ; started 2026-11-27 16:21:21 UTC ; HEAD 11937cbfe10d6d518cf8e06699b8c9082f1ce69b
+CK-1.py exit 0 ; CK-1_x.py exit 0 ; wall time both 10 s
+compare.py exit 0 ; finished 2026-11-27 16:21:34 UTC
+==> out/CK-1.out <==
+CK-1 PRIMARY PASS: sigma^2 in [0.150975912759095197001954182812 +/- 2.02e-32], lower end 0.150975912759095197001954182811 > 0
+
+==> out/CK-1_x.out <==
+CK-1 CROSS-CHECK PASS: sigma^2 in [0.150975912759095197001954182808, 0.150975912759095197001954182816], lower end 0.150975912759095197001954182808 > 0
+
+==> out/compare.out <==
+CK-1 COMPARE PASS: both implementations certify sigma^2 > 0; all enclosures overlap; T_n data identical

@@ -1,0 +1,105 @@
+=== start 2026-11-27 17:36:27 UTC
+Python 3.12.10
+python-flint 0.7.1 mpmath 1.3.0 Windows-11-10.0.26200-SP0
+=== fresh copy of cert/ and scripts/ into an empty scratch directory (not a git checkout)
+=== LF-normalised sha256 of the four scripts, compared with out/run6_clean_11937cb/script_sha256.txt
+script hashes: identical to run 6 (4 of 4)
+=== cert: sh run.sh
+fatal: not a git repository (or any of the parent directories): .git
+runner: sh run.sh ; started 2026-11-27 17:36:29 UTC ; HEAD 
+CK-1.py exit 0 ; CK-1_x.py exit 0 ; wall time both 7 s
+compare.py exit 0 ; finished 2026-11-27 17:36:38 UTC
+==> out/CK-1.out <==
+CK-1 PRIMARY PASS: sigma^2 in [0.150975912759095197001954182812 +/- 2.02e-32], lower end 0.150975912759095197001954182811 > 0
+
+==> out/CK-1_x.out <==
+CK-1 CROSS-CHECK PASS: sigma^2 in [0.150975912759095197001954182808, 0.150975912759095197001954182816], lower end 0.150975912759095197001954182808 > 0
+
+==> out/compare.out <==
+CK-1 COMPARE PASS: both implementations certify sigma^2 > 0; all enclosures overlap; T_n data identical
+
+real	0m8.710s
+user	0m0.378s
+sys	0m0.334s
+run.sh exit 0
+=== diff of the new outputs against out/run6_clean_11937cb/ (expected: only date, commit, provenance and timing lines)
+--- CK-1.out
+3,4c3,4
+< date (UTC): 2026-11-27 16:21:27
+< commit: 11937cbfe10d6d518cf8e06699b8c9082f1ce69b (certificate scripts clean)
+---
+> date (UTC): 2026-11-27 17:36:32
+> commit:  (certificate scripts clean)
+8c8
+< Step 0: T_n(u) computed exactly for n <= 160 (0.7s); T_3..T_5 correct; coefficients >= 0; deg T_n <= n-2 (3<=n<=N); 1 <= T_n(1) <= 4^n/3.
+---
+> Step 0: T_n(u) computed exactly for n <= 160 (0.6s); T_3..T_5 correct; coefficients >= 0; deg T_n <= n-2 (3<=n<=N); 1 <= T_n(1) <= 4^n/3.
+46c46
+< runtime: 1.2 s
+---
+> runtime: 1.1 s
+--- CK-1_x.out
+3,4c3,4
+< date (UTC): 2026-11-27 16:21:27
+< commit: 11937cbfe10d6d518cf8e06699b8c9082f1ce69b (certificate scripts clean)
+---
+> date (UTC): 2026-11-27 17:36:32
+> commit:  (certificate scripts clean)
+8c8
+< Step 0: T_n(u) for n <= 150 (3.5s); T_1..T_5 correct; coefficients >= 0; deg T_n <= n-2; 1 <= T_n(1) <= 4^n/3
+---
+> Step 0: T_n(u) for n <= 150 (3.3s); T_1..T_5 correct; coefficients >= 0; deg T_n <= n-2; 1 <= T_n(1) <= 4^n/3
+13c13
+<   rho in [a, b] = [0.377073005668121840012430925189, 0.377073005668121840012430925190]  (1.2s)
+---
+>   rho in [a, b] = [0.377073005668121840012430925189, 0.377073005668121840012430925190]  (1.4s)
+28c28
+< runtime: 4.9 s
+---
+> runtime: 4.8 s
+--- compare.out
+3c3
+< date (UTC): 2026-11-27 16:21:33
+---
+> date (UTC): 2026-11-27 17:36:38
+5c5
+< commits: primary 11937cbfe10d6d518cf8e06699b8c9082f1ce69b, cross-check 11937cbfe10d6d518cf8e06699b8c9082f1ce69b
+---
+> commits: primary , cross-check 
+--- CK-1.json
+2c2
+<  "commit": "11937cbfe10d6d518cf8e06699b8c9082f1ce69b",
+---
+>  "commit": "",
+92c92
+<  "runtime_s": 1.2
+---
+>  "runtime_s": 1.1
+--- CK-1_x.json
+2c2
+<  "commit": "11937cbfe10d6d518cf8e06699b8c9082f1ce69b",
+---
+>  "commit": "",
+60c60
+<  "runtime_s": 4.9
+---
+>  "runtime_s": 4.8
+=== rows: python scripts/rows.py 72
+
+real	0m0.852s
+user	0m0.000s
+sys	0m0.046s
+exit 0
+        source 0.1828947368  0.1639097744  0.2066585956   MATCH
+        source 0.1593209245  0.1554856327  0.1700357511   MATCH
+        source 0.1555469935  0.1536360445  0.1623732407   MATCH
+        source 0.1541260042  0.1528624719  0.1591027379   MATCH
+RESULT: ALL CHECKS PASS
+=== check_identities: python scripts/checks/exact/check_identities.py 40
+
+real	0m1.335s
+user	0m0.047s
+sys	0m0.046s
+exit 0
+RESULT: ALL CHECKS PASS
+=== end 2026-11-27 17:36:41 UTC

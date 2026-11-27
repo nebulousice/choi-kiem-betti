@@ -1,0 +1,48 @@
+(1) Newton's inequalities (necessary for real-rootedness), first failing index k, exact:
+   Mbar_{0,n}/S_n     n=5:k=1 n=6:k=1 n=7:k=1 n=8:k=1 n=9:k=1 n=10:k=1 n=11:k=1 n=12:k=1 n=13:k=1 n=14:k=1 n=15:k=1
+   Mbar_{0,n+1}/S_n   n=4:k=None n=5:k=None n=6:k=1 n=7:k=1 n=8:k=1 n=9:k=1 n=10:k=1 n=11:k=1 n=12:k=1 n=13:k=1 n=14:k=1 n=15:k=1
+   P^1[n]/S_n         n=2:k=1 n=3:k=1 n=4:k=1 n=5:k=1 n=6:k=1 n=7:k=1 n=8:k=1 n=9:k=1 n=10:k=1 n=11:k=1 n=12:k=1 n=13:k=1 n=14:k=1 n=15:k=1
+   Mbar_{0,n}/S_n fails Newton for every 5 <= n <= 200: True
+
+(2) zeros (Arb isolation), n: degree, #real zeros, min |zero - 1|:
+   Mbar_{0,n}/S_n     n=20: deg 17, real 1, dist 0.9927 | n=40: deg 37, real 1, dist 0.9734 | n=80: deg 77, real 3, dist 0.9822 | n=120: deg 117, real 3, dist 0.9873
+   Mbar_{0,n+1}/S_n   n=20: deg 18, real 0, dist 1.0326 | n=40: deg 38, real 0, dist 1.0013 | n=80: deg 78, real 0, dist 0.9968 | n=120: deg 118, real 0, dist 0.9970
+   P^1[n]/S_n         n=20: deg 20, real 0, dist 1.0279 | n=40: deg 40, real 0, dist 1.0018 | n=80: deg 80, real 0, dist 0.9971 | n=120: deg 120, real 0, dist 0.9972
+
+(3) unit circle, max over theta in [t0, pi] of |P_n(e^{i theta})|/P_n(1), and -log(max)/n:
+   Mbar_{0,n}/S_n     n=100  theta>=0.3: max 0.48753   rate 0.007184
+   Mbar_{0,n}/S_n     n=100  theta>=1.0: max 0.00043476   rate 0.077407
+   Mbar_{0,n}/S_n     n=200  theta>=0.3: max 0.24015   rate 0.0071324
+   Mbar_{0,n}/S_n     n=200  theta>=1.0: max 2.1045e-7   rate 0.07687
+   Mbar_{0,n+1}/S_n   n=100  theta>=0.3: max 0.48943   rate 0.0071451
+   Mbar_{0,n+1}/S_n   n=100  theta>=1.0: max 0.00045201   rate 0.077018
+   Mbar_{0,n+1}/S_n   n=200  theta>=0.3: max 0.24103   rate 0.0071142
+   Mbar_{0,n+1}/S_n   n=200  theta>=1.0: max 2.1828e-7   rate 0.076688
+   P^1[n]/S_n         n=100  theta>=0.3: max 0.47948   rate 0.0073506
+   P^1[n]/S_n         n=100  theta>=1.0: max 0.00035979   rate 0.0793
+   P^1[n]/S_n         n=200  theta>=0.3: max 0.23613   rate 0.0072169
+   P^1[n]/S_n         n=200  theta>=1.0: max 1.7376e-7   rate 0.077828
+   small theta check (n=200, theta=0.1): |P_n|/P_n(1) = 0.85896952 vs exp(-sigma_n^2 theta^2/2) = 0.85897136
+
+(4) normality: Kolmogorov distance (with continuity correction), skewness, excess kurtosis:
+   Mbar_{0,n}/S_n     n= 50  KS 0.001293  skew 0.0  ex.kurt -0.00062952  (n*ex.kurt -0.031476)
+   Mbar_{0,n}/S_n     n=100  KS 0.000645  skew -1.84e-32  ex.kurt -0.00089248  (n*ex.kurt -0.089248)
+   Mbar_{0,n}/S_n     n=200  KS 0.0003199  skew 7.84e-32  ex.kurt -0.00055776  (n*ex.kurt -0.11155)
+   Mbar_{0,n+1}/S_n   n= 50  KS 0.001272  skew 0.0  ex.kurt -0.0022422  (n*ex.kurt -0.11211)
+   Mbar_{0,n+1}/S_n   n=100  KS 0.0006333  skew 4.55e-32  ex.kurt -0.0012255  (n*ex.kurt -0.12255)
+   Mbar_{0,n+1}/S_n   n=200  KS 0.0003208  skew 6.88e-30  ex.kurt -0.00063397  (n*ex.kurt -0.12679)
+   P^1[n]/S_n         n= 50  KS 0.001139  skew 0.0  ex.kurt -0.0045434  (n*ex.kurt -0.22717)
+   P^1[n]/S_n         n=100  KS 0.0006041  skew -8.65e-32  ex.kurt -0.0018347  (n*ex.kurt -0.18347)
+   P^1[n]/S_n         n=200  KS 0.0003127  skew 2.22e-32  ex.kurt -0.00079114  (n*ex.kurt -0.15823)
+
+(5) variance - sigma^2 n  (sigma^2 = 0.150975912759095, numerical):
+   Mbar_{0,n}/S_n     n=50: 0.228554037  n=100: 0.21489433  n=199: 0.208786875  n=200: 0.208757066
+   Mbar_{0,n+1}/S_n   n=50: 0.133006589  n=100: 0.131364965  n=199: 0.130577893  n=200: 0.130573971
+   P^1[n]/S_n         n=50: 0.569866396  n=100: 0.568097875  n=199: 0.567163363  n=200: 0.567158581
+   Mbar_{0,n}/S_n     mean at n=200: 197/2  (duality: (n-3)/2 = 197/2)
+   Mbar_{0,n+1}/S_n   mean at n=200: 99  (duality: (n-2)/2 = 99)
+   P^1[n]/S_n         mean at n=200: 100  (duality: (n-0)/2 = 100)
+
+real	0m8.162s
+user	0m0.000s
+sys	0m0.000s

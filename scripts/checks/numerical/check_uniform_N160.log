@@ -1,0 +1,35 @@
+u = 1.0
+   rho(u), tau(u) from the characteristic system : 0.37707300566812 , 0.76754759322466
+   rho(u) from the ratio test (extrapolated)     : 0.37708390405686   |diff| = 1.09e-5
+   psibar_n/Q_n (extrapolated) = 4.75398918604 ; predicted (1+u)(1+u+u rho(u)) = 4.75414601134 ; |diff| = 0.000157
+   n p_n/Q_n at n = 80, 160: 1.340985121 , 1.311423101
+u = 1.1
+   rho(u), tau(u) from the characteristic system : 0.3592785536789 , 0.7313062199947
+   rho(u) from the ratio test (extrapolated)     : 0.35928894250951   |diff| = 1.04e-5
+   psibar_n/Q_n (extrapolated) = 5.23975995221 ; predicted (1+u)(1+u+u rho(u)) = 5.239933459 ; |diff| = 0.000174
+   n p_n/Q_n at n = 80, 160: 1.279081103 , 1.25084465
+   Q_n(u)/Q_n(1) / (rho(1)/rho(u))^n at n = 80, 160: 0.9096351998 , 0.9096310692
+u = 0.9
+   rho(u), tau(u) from the characteristic system : 0.39713692134508 , 0.80836145995306
+   rho(u) from the ratio test (extrapolated)     : 0.39714840605085   |diff| = 1.15e-5
+   psibar_n/Q_n (extrapolated) = 4.28896199326 ; predicted (1+u)(1+u+u rho(u)) = 4.2891041355 ; |diff| = 0.000142
+   n p_n/Q_n at n = 80, 160: 1.414200704 , 1.382971796
+   Q_n(u)/Q_n(1) / (rho(1)/rho(u))^n at n = 80, 160: 1.111924119 , 1.111917947
+u = (1.0 + 0.1j)
+   rho(u), tau(u) from the characteristic system : (0.37594891981476 - 0.018778902004275j) , (0.76528226738473 - 0.038228666284284j)
+   rho(u) from the ratio test (extrapolated)     : (0.3759597803585 - 0.018779443957615j)   |diff| = 1.09e-5
+   psibar_n/Q_n (extrapolated) = (4.74361618992 + 0.475398978675j) ; predicted (1+u)(1+u+u rho(u)) = (4.74377202103 + 0.475414660956j) ; |diff| = 0.000157
+   n p_n/Q_n at n = 80, 160: (1.335424566 - 0.06654788848j) , (1.306029345 - 0.0650874967j)
+   Q_n(u)/Q_n(1) / (rho(1)/rho(u))^n at n = 80, 160: (0.9894593514 - 0.09888064958j) , (0.9894641893 - 0.09888162625j)
+u = (0.995562 + 0.0941083j)
+   rho(u), tau(u) from the characteristic system : (0.37690705492131 - 0.017774485506166j) , (0.76723038252464 - 0.036181666371093j)
+   rho(u) from the ratio test (extrapolated)     : (0.37691794367451 - 0.017774999006732j)   |diff| = 1.09e-5
+   psibar_n/Q_n (extrapolated) = (4.72372458553 + 0.446523440158j) ; predicted (1+u)(1+u+u rho(u)) = (4.72387983608 + 0.446538115656j) ; |diff| = 0.000156
+   n p_n/Q_n at n = 80, 160: (1.33898315 - 0.06314484245j) , (1.309505209 - 0.061754698j)
+   Q_n(u)/Q_n(1) / (rho(1)/rho(u))^n at n = 80, 160: (0.9949795532 - 0.09405325923j) , (0.9949839588 - 0.09405367569j)
+u = (0.95 - 0.08j)
+   rho(u), tau(u) from the characteristic system : (0.38599415701627 + 0.015989435333418j) , (0.78571907223224 + 0.032528571015177j)
+   rho(u) from the ratio test (extrapolated)     : (0.38600531038205 + 0.015989901834645j)   |diff| = 1.12e-5
+   psibar_n/Q_n (extrapolated) = (4.51224476808 - 0.37202079742j) ; predicted (1+u)(1+u+u rho(u)) = (4.51239336227 - 0.372032547859j) ; |diff| = 0.000149
+   n p_n/Q_n at n = 80, 160: (1.371878574 + 0.05813712862j) , (1.34165913 + 0.05681945907j)
+   Q_n(u)/Q_n(1) / (rho(1)/rho(u))^n at n = 80, 160: (1.044843896 + 0.08854317057j) , (1.044846745 + 0.08853920278j)

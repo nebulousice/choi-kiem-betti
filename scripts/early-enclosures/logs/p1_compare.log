@@ -1,0 +1,29 @@
+impl 1: p1_arb.py (python-flint 0.7.1, Arb, prec 240), CKL coefficients, Drmota system  N=160 K=120
+impl 2: p1_iv.py (mpmath 1.3.0 iv, dps 70), Getzler + plethystic log coefficients, scalar H, G-form  N=150 K=140
+
+T_n(1), T_n'(1), T_n''(1)/2 for n < 151: IDENTICAL
+
+quantity     agree    width1     width2     intersection (lower, upper)
+rho          yes      1.8e-38    8.1e-30    [0.3770730056681218400124309252 +/- 1.04e-29]
+tau          yes      7.8e-38    8.9e-30    [0.7675475932246606791374518123 +/- 1.33e-29]
+rho1         yes      1.1e-34    2.7e-29    [-0.1885365028340609200062154626 +/- 5.16e-30]
+rho2         yes      1.1e-31    8.2e-28    [0.2258758130435312083645664093 +/- 2.61e-29]
+mu           yes      1.6e-34    8.3e-29    [0.5000000000000000000000000000 +/- 1e-33]
+sigma2       yes      1.3e-31    2.4e-27    [0.1509759127590951970019541828 +/- 1.21e-29]
+a1           yes      1.2e-34    1.2e-28    [-1.039109807714848170552589119 +/- 3.53e-28]
+a2           yes      1.7e-34    2.2e-28    [0.2638129151025992159999867481 +/- 3.28e-29]
+g1           yes      6.1e-34    2.9e-28    [-2.470039873843958280599603178 +/- 1.07e-28]
+g2           yes      1.0e-33    1.3e-27    [1.334022099903880374707040476 +/- 1.66e-28]
+rho_plus_g2  yes      1.3e-33    1.3e-27    [1.711095105572002214719471401 +/- 3.55e-28]
+kQ           yes      8.0e-31    8.2e-29    [0.6967853838851876496556781436 +/- 3.44e-29]
+kPsi         yes      1.7e-30    4.0e-28    [3.312619453555158228262099337 +/- 1.71e-28]
+kp           yes      4.8e-31    7.6e-28    [0.8941995450000399390740776658 +/- 3.23e-29]
+g1           vs impl-2 Psi-route g1_psi: agree
+rho_plus_g2  vs impl-2 Psi-route rho_plus_g2_psi: agree
+
+sigma^2 > 0 in both: True;  rho + g2 > 0 in both: True
+RESULT: ALL AGREE
+
+real	0m0.210s
+user	0m0.015s
+sys	0m0.015s

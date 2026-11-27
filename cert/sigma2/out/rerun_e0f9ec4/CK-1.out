@@ -1,0 +1,47 @@
+CK-1 primary certificate (Arb)
+command: python CK-1.py --N 160 --K 120 --prec 320 --defcheck 18 --json out/CK-1.json
+date (UTC): 2026-11-27 17:15:28
+commit: e0f9ec4c833f9b65eb205121b1d37a9568766605 (certificate scripts clean)
+script sha256 (LF-normalised): c251e1af4e62121dd0e44f95a1c92041a75a31890374464f12c1a11dd17ada3a
+python: 3.12.10  platform: Windows-11-10.0.26200-SP0
+python-flint: 0.7.1  (Arb/FLINT)  prec=320 bits  N=160  K=120  seed: none (deterministic)
+Step 0: T_n(u) computed exactly for n <= 160 (0.6s); T_3..T_5 correct; coefficients >= 0; deg T_n <= n-2 (3<=n<=N); 1 <= T_n(1) <= 4^n/3.
+Step 0b: definition (2.1) verified directly (Newton identities for h_r[T]) as polynomial identities for n <= 18.
+T-hash (sha256 of coefficient lists, n=1..150): ed04537e25b90c953f10cf67fe815eaafba6024bc656a1af519b176ca33ddd51
+T_n(1), n=1..12: [1, 0, 1, 2, 4, 8, 17, 36, 80, 178, 406, 936]
+Step 1: enclose rho as the zero of h
+  attempt 0: h(a)=[1.5e-39 +/- 9.71e-41]  h(b)=[-1.6e-39 +/- 7.14e-41]
+  h(a) > 0 > h(b) certified; a = 18853650283406092000621546259484707539361379493806488929883/50000000000000000000000000000000000000000000000000000000000
+                              b = 11783531427128807500388466412177942212167962874589476226017/31250000000000000000000000000000000000000000000000000000000
+  rho = [0.37707300566812184001243092518969415079 +/- 2.78e-39]
+Step 2: Cauchy polydisc radius r = 1/100; theta0 = (rho_hi + r)(1 + r) = [0.39094374 +/- 4.28e-9] < 1/2
+  truncation bounds used: n-tail (n > N, k <= K): 0 <= [(u-1)^j]T_n <= binom(n,j) T_n(1), T_n(1) <= 4^n/3 (Lemma 3.1(1),(3));
+  k-tail (k > K): |T(x^k,u^k)| <= (4/3) theta^k and |u^k T(x^k,u^k)| <= (4/3) theta^k on Omega (Lemma 3.2(2); the u^k bound
+  uses deg T_1 = 0 and deg T_n <= n-2 for n >= 3, Lemma 3.1(1)) + Cauchy on the polydisc; h: T(t,1) <= 4t/3, t <= 1/4 (Lemma 3.1(3)).
+  tau = 1 - R_2(rho) = [0.76754759322466067913745181231328011536 +/- 4.30e-39]
+  check (Prop 4.2(3)): log(2+rho) - R(rho) = [0.767547593224660679137451812313 +/- 2.81e-31] ; overlaps tau: True
+  jets done (0.2s)
+  consistency: F(rho,tau,1) - tau = [+/- 1.38e-37] (contains 0: True)
+  consistency: F_y(rho,tau,1) - 1 = [+/- 1.39e-37] (contains 0: True)
+  consistency: F_yy - (2+rho)    = [+/- 1.47e-37] (contains 0: True)
+  F_x   = [3.403376295540253877915652487278467 +/- 4.25e-34]
+  F_u   = [0.6416606645895008305198017755080982 +/- 4.53e-35]
+  F_xx  = [19.1870036381915960994666577913256 +/- 9.03e-32]
+  F_xy  = [3.931997489971344624314714364500722 +/- 3.94e-34]
+  F_xu  = [5.1264481708055032569379568279197 +/- 5.45e-32]
+  F_yy  = [2.3770730056681218400124309251896942 +/- 4.94e-35]
+  F_yu  = [1.6535833881214413951249183180121007 +/- 4.88e-35]
+  F_uu  = [0.8323841971099481333063506459165 +/- 3.14e-32]
+Step 3: rho'(1)  = [-0.1885365028340609200062154625948471 +/- 3.72e-35]
+        rho''(1) = [0.22587581304353120836456640927397 +/- 6.37e-33]
+        mu       = [0.5000000000000000000000000000000000 +/- 3.33e-35]   (contains 1/2: True)
+        sigma^2  = [0.1509759127590951970019541828120 +/- 2.02e-32]
+CK-2 corroboration (local inversion V(w,1) = tau + v1 w + v2 w^2 + ...):
+  q0 = [2.377073005668121840012431 +/- 7.49e-26] ; 2+rho = [2.377073005668121840012431 +/- 7.49e-26]
+  q1(1)^2 = [6.101096978379077338171350 +/- 2.49e-26]
+  2 rho (2+rho) F_x = [6.101096978379077338171350 +/- 2.49e-26]
+  rho + q2(1) = [1.711095105572002214719471 +/- 4.02e-25]
+  (4/3) rho F_x = [1.711095105572002214719471 +/- 4.02e-25]
+  CK-2 enclosures overlap: True
+runtime: 1.0 s
+CK-1 PRIMARY PASS: sigma^2 in [0.150975912759095197001954182812 +/- 2.02e-32], lower end 0.150975912759095197001954182811 > 0

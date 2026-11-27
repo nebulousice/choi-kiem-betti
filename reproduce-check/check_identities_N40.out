@@ -1,0 +1,13 @@
+(I1) E_u = u^2 E_1 - (u-1)(1+u+ux), n <= 40: True   (E_1 = Q from rows.impl_A: True)
+(I2) psibar = E_1 E_u = Exp((1+u)T), n <= 40: True
+(I3) deg_u T_n <= n-2 (3<=n<=40), T_1 = 1, T_2 = 0: True ; nonnegative integer coefficients: True
+(I4) T_n(1) <= s_n <= 4^n/3 for 1 <= n <= 40: True   (s_1..s_8 = [1, 0, 1, 2, 6, 18, 57, 186]; T_1..T_8(1) = [1, 0, 1, 2, 4, 8, 17, 36])
+(I5) Q(x,1)(2 - sum_k T(x^k,1)) = 2 + x, n <= 40: True  (hence F_y(x,T,1) = Q(x,1) - 1 - x)
+(I6) Q_n(1) >= 1 for 0 <= n <= 40: True   (Q_2(1), Q_3(1) = 1, 2)
+(I7) sum_{k=2}^{6} (k-1)/k (9/20)^k = 27447903/128000000 = 0.2144367422 > 21/100: True ; e^(2/5) <= 1007/675 < 3/2: True
+     => log(49/20) > log(9/4) = 2 log(3/2) > 4/5 and h(9/20) < 1 - 21/100 - 4/5 = -1/100 < 0: True
+(I8) T = x + sum_{r>=3} w_r(u) [s^r] E_s, n <= 12: True
+
+first terms: T_1..T_6 = [[1], [], [0, 1], [0, 1, 1], [0, 1, 2, 1], [0, 1, 3, 3, 1]]
+             Q_0..Q_5 = [[1], [1], [1], [1, 1], [1, 2, 1], [1, 3, 3, 1]]
+RESULT: ALL CHECKS PASS

@@ -1,0 +1,35 @@
+q+ to degree 130 (CKL tree DP): 8.5s
+q, p, fm to degree 240 (Getzler): 12.7s
+
+u = 1:  rho = 0.37707300566812184001243092519
+        1/rho = 2.6520063355586450623   tau = q+(rho,1) = 0.76754759322466067914   q(rho,1) = 2+rho = 2.37707300566812184
+        (non-quotient: rho = e-2 = 0.718281828459)
+
+quasi-powers constants from the singular curve (central differences):
+  h=1e-6:  mu = 0.5   sigma^2 = 0.150975912759095197
+  h=1e-8:  mu = 0.5   sigma^2 = 0.150975912759095197
+  h=1e-10:  mu = 0.5   sigma^2 = 0.150975912759095197
+  duality rho(1/u) = u rho(u) at u=1.2: 0.41202763753367141012 vs 0.41202763753367141012
+  real-u sample: rho(0.8) = 0.419998916722423, rho(1.2) = 0.343356364611393
+  complex-u sample: rho(1+0.05i) = (0.376790993113045 - 0.00941744506707134j)
+  non-quotient constant (3-e)/(6(e-2)) = 0.0653685318628888
+
+exact data, n -> sigma_n^2/n  [Mbar_{0,n}/S_n, Mbar_{0,n+1}/S_n, P^1[n]/S_n] and (mean)/n:
+  n= 70  0.154126004171  0.152862471897  0.159102737915   means/n: 0.47857143  0.48571429  0.5
+  n=120  0.152749259691  0.152068404485  0.155707477756   means/n: 0.4875  0.49166667  0.5
+  n=180  0.152139349071  0.151701806286  0.154127380521   means/n: 0.49166667  0.49444444  0.5
+  n=240  0.151841637958  0.151519430083  0.153338411331   means/n: 0.49375  0.49583333  0.5
+Richardson (variance = s2*n + c + d/n + ..., using n, n/2... three-point on n, n-1, n-2 differences):
+  Mbar_{0,n}/S_n    first difference 0.150955459332   extrapolated 0.150977504751   prediction 0.150975912759   diff 1.59e-6
+  Mbar_{0,n+1}/S_n  first difference 0.150973202968   extrapolated 0.150975993685   prediction 0.150975912759   diff 8.09e-8
+  P^1[n]/S_n        first difference 0.1509725821   extrapolated 0.150975818603   prediction 0.150975912759   diff -9.42e-8
+
+radius and exponents from exact totals (should stabilise if exponent is right):
+  n=120  n^1.5 rho^n q_n = 0.7005024253   n^1.5 rho^n fm_n = 3.306139682   n^2.5 rho^n p_n = 0.9254402633
+  n=239  n^1.5 rho^n q_n = 0.6986494998   n^1.5 rho^n fm_n = 3.309587994   n^2.5 rho^n p_n = 0.9096263673
+  n=240  n^1.5 rho^n q_n = 0.6986417226   n^1.5 rho^n fm_n = 3.309601532   n^2.5 rho^n p_n = 0.9095610229
+  ratio q_{n-1}/q_n divided by (1 - 1/n)^(-3/2) at n=240: 0.377077203166   (rho = 0.377073005668)
+
+real	0m40.677s
+user	0m0.062s
+sys	0m0.000s

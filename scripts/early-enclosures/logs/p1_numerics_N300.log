@@ -1,0 +1,18 @@
+exact rows to n=300 (Getzler): 28.6s
+
+(numerical) amplitude check, prediction from certified constants vs extrapolated exact data:
+  Q    n^1.5 rho^n total: at n=300 0.698270066701 ; extrapolated 0.696785383885196 ; predicted 0.696785383885188 ; rel.diff 1.24e-14
+  Psi  n^1.5 rho^n total: at n=300 3.31023964687 ; extrapolated 3.31261945355516 ; predicted 3.31261945355516 ; rel.diff -3.43e-16
+  p    n^2.5 rho^n total: at n=300 0.906448097021 ; extrapolated 0.894199545000186 ; predicted 0.89419954500004 ; rel.diff 1.63e-13
+
+(numerical) quasi-powers check: sigma_n^2 - sigma^2 n  (should converge to a constant):
+  Mbar_{0,n}/S_n    n=70: 0.2205063988  n=150: 0.2107564429  n=290: 0.2069353348  n=300: 0.2068018809 ; extrapolated c = 0.2030179767
+                    (Var_N - Var_{N-10})/10 = 0.150962567369   vs certified sigma^2 = 0.150975912759
+  Mbar_{0,n+1}/S_n  n=70: 0.1320591397  n=150: 0.1308353355  n=290: 0.1303327173  n=300: 0.130314927 ; extrapolated c = 0.1298038398
+                    (Var_N - Var_{N-10})/10 = 0.150974133729   vs certified sigma^2 = 0.150975912759
+  P^1[n]/S_n        n=70: 0.5688777609  n=150: 0.5674745742  n=290: 0.5668622016  n=300: 0.5668401716 ; extrapolated c = 0.5661973825
+                    (Var_N - Var_{N-10})/10 = 0.150973709764   vs certified sigma^2 = 0.150975912759
+
+real	0m28.991s
+user	0m0.000s
+sys	0m0.046s
